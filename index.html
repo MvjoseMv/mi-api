@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Predicción de Alzheimer</title>
+    <style>
+        /* Estilo general */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #b30000, #fff); /* Fondo rojo y blanco */
+            color: #000; /* Texto negro */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Contenedor del logo */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo-container img {
+            height: 50px; /* Ajusta el tamaño del logo */
+        }
+
+        /* Tarjeta del formulario */
+        .form-container {
+            background: #fff; /* Fondo blanco */
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        /* Animación de entrada */
+        .form-container {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #b30000; /* Color rojo */
+            text-transform: uppercase;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #000;
+        }
+
+        /* Estilo para los cuadros de preguntas */
+        .question-group {
+            margin-bottom: 20px;
+            background: #f8f8f8; /* Fondo gris claro */
+            border: 1px solid #b30000; /* Borde rojo */
+            border-radius: 15px;
+            padding: 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .question-group:hover {
+            background-color: #dab7b7; /* Fondo gris más claro */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #b30000; /* Borde rojo */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #b30000; /* Color rojo */
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #b30000; /* Borde rojo */
+            background: #fff; /* Fondo blanco */
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border 0.3s ease, background 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border: 1px solid #b30000; /* Borde rojo */
+            background: #f8f8f8; /* Fondo gris claro */
+            outline: none;
+            box-shadow: 0 0 8px rgba(179, 0, 0, 0.6);
+        }
+
+        /* Botón de enviar */
+        button {
+            background-color: #b30000; /* Color rojo */
+            color: white;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #990000; /* Rojo más oscuro */
+        }
+
+        /* Estilo de resultado */
+        #resultado {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            text-align: center;
+            margin-top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        /* Ajustes para la animación y forma general */
+        .form-container {
+            max-width: 800px;
+            padding: 40px 50px;
+        }
+
+        /* Estilo para la alerta de resultado */
+        #resultado {
+            font-size: 1.4rem;
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h1>Encuesta de Predicción de Alzheimer</h1>
+        <form id="prediccion-form">
+            <!-- Preguntas de la encuesta -->
+            <div class="question-group">
+                <label for="age">Edad:</label>
+                <input type="number" id="age" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="gender">Género:</label>
+                <select id="gender" required>
+                    <option value="0">Mujer</option>
+                    <option value="1">Hombre</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="ethnicity">Etnicidad:</label>
+                <input type="number" id="ethnicity" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="educationLevel">Nivel de Educación:</label>
+                <input type="number" id="educationLevel" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="bmi">Índice de Masa Corporal (BMI):</label>
+                <input type="number" step="0.1" id="bmi" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="smoking">¿Fuma?</label>
+                <select id="smoking" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="alcoholConsumption">¿Consume Alcohol?</label>
+                <select id="alcoholConsumption" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="physicalActivity">¿Realiza Actividad Física?</label>
+                <select id="physicalActivity" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="dietQuality">Calidad de la Dieta:</label>
+                <input type="number" id="dietQuality" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="sleepQuality">Calidad del Sueño:</label>
+                <input type="number" id="sleepQuality" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="familyHistoryAlzheimers">¿Historia Familiar de Alzheimer?</label>
+                <select id="familyHistoryAlzheimers" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="cardiovascularDisease">¿Tiene Enfermedades Cardiovasculares?</label>
+                <select id="cardiovascularDisease" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="diabetes">¿Tiene Diabetes?</label>
+                <select id="diabetes" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="depression">¿Sufre de Depresión?</label>
+                <select id="depression" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="headInjury">¿Ha tenido una Lesión en la Cabeza?</label>
+                <select id="headInjury" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="hypertension">¿Tiene Hipertensión?</label>
+                <select id="hypertension" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="systolicBP">Presión Arterial Sistólica:</label>
+                <input type="number" id="systolicBP" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="diastolicBP">Presión Arterial Diastólica:</label>
+                <input type="number" id="diastolicBP" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="cholesterolTotal">Colesterol Total:</label>
+                <input type="number" id="cholesterolTotal" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="cholesterolLDL">Colesterol LDL:</label>
+                <input type="number" id="cholesterolLDL" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="cholesterolHDL">Colesterol HDL:</label>
+                <input type="number" id="cholesterolHDL" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="cholesterolTriglycerides">Triglicéridos:</label>
+                <input type="number" id="cholesterolTriglycerides" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="mmse">MMSE (Mini Mental State Examination):</label>
+                <input type="number" id="mmse" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="functionalAssessment">Evaluación Funcional:</label>
+                <input type="number" id="functionalAssessment" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="memoryComplaints">Quejas de Memoria:</label>
+                <select id="memoryComplaints" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="behavioralProblems">Problemas de Comportamiento:</label>
+                <select id="behavioralProblems" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="adl">Actividades de la Vida Diaria:</label>
+                <input type="number" id="adl" required><br>
+            </div>
+
+            <div class="question-group">
+                <label for="confusion">Confusión:</label>
+                <select id="confusion" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="disorientation">Desorientación:</label>
+                <select id="disorientation" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="personalityChanges">Cambios de Personalidad:</label>
+                <select id="personalityChanges" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="difficultyCompletingTasks">Dificultad para Completar Tareas:</label>
+                <select id="difficultyCompletingTasks" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+
+            <div class="question-group">
+                <label for="forgetfulness">Olvido:</label>
+                <select id="forgetfulness" required>
+                    <option value="0">No</option>
+                    <option value="1">Sí</option>
+                </select><br>
+            </div>
+            <div>
+                <form id="prediccion-form">
+    
+                    
+           <!-- Botón de predicción -->
+            <button type="submit">Predecir</button>
+               </form>
+
+            <h3 id="resultado"></h3>
+
+    <!-- Cargar el script después del formulario -->
+    <script src="script.js"></script>
+
+</body>
+</html>

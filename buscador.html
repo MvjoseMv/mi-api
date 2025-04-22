@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>visionsana - Buscar con Google</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dfe1e5;
+        }
+        .header img {
+            height: 30px;
+            margin-right: 20px;
+        }
+        .search-bar {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 8px;
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        .tabs {
+            display: flex;
+            gap: 20px;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dfe1e5;
+            margin-left: 150px;
+        }
+        .tabs a {
+            text-decoration: none;
+            color: #5f6368;
+            font-size: 14px;
+        }
+        .tabs a.active {
+            color: #1a73e8;
+            border-bottom: 2px solid #1a73e8;
+            padding-bottom: 8px;
+        }
+        .container {
+            display: flex;
+            margin: 20px 150px;
+        }
+        .results {
+            flex: 1;
+            max-width: 650px;
+            padding-right: 20px;
+        }
+        .result-count {
+            font-size: 14px;
+            color: #70757a;
+            margin-bottom: 10px;
+        }
+        .result {
+            margin-bottom: 25px;
+        }
+        .result h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: normal;
+            color: #1a0dab;
+        }
+        .result h3 a {
+            text-decoration: none;
+            color: #1a0dab;
+        }
+        .result h3 a:hover {
+            text-decoration: underline;
+        }
+        .result .url {
+            color: #006621;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+        .result p {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.4;
+            margin: 5px 0;
+        }
+        .sub-links {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .sub-links a {
+            color: #1a0dab;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        .sub-links a:hover {
+            text-decoration: underline;
+        }
+        .sidebar {
+            width: 300px;
+            padding-left: 20px;
+        }
+        .knowledge-panel {
+            border: 1px solid #dfe1e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        .knowledge-panel h4 {
+            font-size: 18px;
+            color: #202124;
+            margin: 0 0 10px;
+        }
+        .knowledge-panel p {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.4;
+            margin: 5px 0;
+        }
+        .knowledge-panel a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .knowledge-panel a:hover {
+            text-decoration: underline;
+        }
+        .video {
+            margin-bottom: 20px;
+        }
+        .video img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .video p {
+            font-size: 14px;
+            color: #4d5156;
+            margin: 5px 0;
+        }
+        .video a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .video a:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            margin-left: 150px;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #1a73e8;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        .pagination a.active {
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        .pagination a:hover:not(.active) {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google Logo">
+        <div class="search-bar">
+            <input type="text" value="visionsana" readonly>
+        </div>
+    </div>
+    <div class="tabs">
+        <a href="#" class="active">Todo</a>
+        <a href="#">Imágenes</a>
+        <a href="#">Videos</a>
+        <a href="#">Noticias</a>
+        <a href="#">Más</a>
+        <a href="#">Herramientas</a>
+    </div>
+    <div class="container">
+        <div class="results">
+            <div class="result-count">Aproximadamente 1,770,000 resultados</div>
+            <div class="result">
+                <h3><a href="login.html">VisionSana – Predicciones de Enfermedades</a></h3>
+                <div class="url">www.visionsana.com</div>
+                <p>VisionSana ofrece herramientas avanzadas para la predicción de enfermedades mediante inteligencia artificial y análisis de datos médicos. Obtén información personalizada sobre riesgos de salud y medidas preventivas para mejorar tu bienestar.</p>
+                <div class="sub-links">
+                    <a href="login.html">Inicio</a>
+                    <a href="login.html">Servicios</a>
+                    <a href="login.html">Contacto</a>
+                </div>
+            </div>
+            <div class="result">
+                <h3><a href="#">Vision Sana | Clínica de Oftalmología de Cali</a></h3>
+                <div class="url">www.clinica-visionsana.com</div>
+                <p>Nuestro equipo de especialistas está capacitado para todos los problemas visuales de córnea, refractivo y segmento anterior. Nuevas citas con doctores, María Ximena Núñez y Claudia...</p>
+                <div class="sub-links">
+                    <a href="#">Dra. Ximena Núñez</a>
+                    <a href="#">Catarata & Multifocales</a>
+                </div>
+            </div>
+            <div class="result">
+                <h3><a href="#">Vision Sana – Información, contacto y citas</a></h3>
+                <div class="url">www.clinica-visionsana.com › dra-maria-ximena</div>
+                <p>Todo acerca de la cirugía con las mejores técnicas médicas con la Dra. María Ximena Núñez. Presbicia & Lentes Multifocales Premium...</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">Dra. Claudia Blanco</a></h3>
+                <div class="url">www.website-designed-by-jjmora.com</div>
+                <p>Presbicia & Lentes Multifocales Premium. Muchos nos han pasado que después de...</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">Citas Oftalmológicas</a></h3>
+                <div class="url">www.website-designed-by-jjmora.com</div>
+                <p>VisiónSana. Todos los derechos...</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">Salud Visual – Consejos para una Visión Sana</a></h3>
+                <div class="url">www.saludvisual.org</div>
+                <p>Consejos prácticos para mantener una visión saludable, incluyendo ejercicios oculares y recomendaciones de dieta.</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">OMS – Salud y Bienestar</a></h3>
+                <div class="url">www.who.int</div>
+                <p>La Organización Mundial de la Salud proporciona datos y recursos sobre salud global, incluyendo prevención de enfermedades.</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">MedlinePlus – Información de Salud en Español</a></h3>
+                <div class="url">www.medlineplus.gov</div>
+                <p>Encuentra información confiable sobre enfermedades, tratamientos y prevención en español, respaldada por la Biblioteca Nacional de Medicina.</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">Clínica de Salud – Prevención de Enfermedades</a></h3>
+                <div class="url">www.clinicasalud.com</div>
+                <p>Información sobre prevención de enfermedades y cuidados generales para una vida saludable.</p>
+            </div>
+            <div class="result">
+                <h3><a href="#">Guía de Salud Visual 2025</a></h3>
+                <div class="url">www.guiasaludvisual.org</div>
+                <p>Guía actualizada con las mejores prácticas para mantener una visión sana y prevenir problemas oculares.</p>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="knowledge-panel">
+                <h4>VisionSana</h4>
+                <p>VisionSana es una plataforma que utiliza inteligencia artificial para predecir enfermedades y ofrecer recomendaciones personalizadas de salud.</p>
+                <p><strong>Sitio web:</strong> <a href="login.html">www.visionsana.com</a></p>
+                <p><strong>Fundado:</strong> 2023</p>
+                <p><strong>Tipo:</strong> Plataforma de Salud Digital</p>
+            </div>
+            <div class="video">
+                <a href="https://www.youtube.com/watch?v=health-prediction-video">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg" alt="YouTube Video Thumbnail">
+                </a>
+                <p><a href="https://www.youtube.com/watch?v=health-prediction-video">Cómo la IA está revolucionando la predicción de enfermedades</a></p>
+                <p>YouTube • HealthTech TV • 15K visualizaciones • 10 de abril de 2025</p>
+            </div>
+        </div>
+    </div>
+    <div class="pagination">
+        <a href="#" class="active">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">6</a>
+        <a href="#">7</a>
+        <a href="#">8</a>
+        <a href="#">9</a>
+        <a href="#">10</a>
+        <a href="#">Siguiente</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicciones de Salud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('virusfondo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .transparent-blur {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full rounded-2xl shadow-xl p-8 transparent-blur relative">
+        <!-- Page Name in Top-Left Corner -->
+        <div class="absolute top-4 left-4">
+            <h1 class="text-2xl font-extrabold text-red-600">VisionSana</h1>
+        </div>
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8 mt-10">Predicciones de Salud</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Diabetes -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-tint mr-2"></i> Diabetes
+                </a>
+                <p class="text-sm text-white text-center mt-2">Evalúa el riesgo de desarrollar diabetes tipo 2 basado en factores como glucosa, IMC y antecedentes familiares.</p>
+            </div>
+            <!-- Cardiovascular -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-heartbeat mr-2"></i> Cardiovascular
+                </a>
+                <p class="text-sm text-white text-center mt-2">Analiza el riesgo de enfermedades cardiovasculares considerando presión arterial, colesterol y otros indicadores clave.</p>
+            </div>
+            <!-- Anemia -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-tint-slash mr-2"></i> Anemia
+                </a>
+                <p class="text-sm text-white text-center mt-2">Predice la probabilidad de anemia evaluando niveles de hemoglobina, hierro y factores dietéticos.</p>
+            </div>
+            <!-- Cáncer -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-disease mr-2"></i> Cáncer
+                </a>
+                <p class="text-sm text-white text-center mt-2">Estima el riesgo de desarrollar ciertos tipos de cáncer según factores genéticos, estilo de vida y exposiciones ambientales.</p>
+            </div>
+            <!-- Pérdida de Vista -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-eye-slash mr-2"></i> Pérdida de Vista
+                </a>
+                <p class="text-sm text-white text-center mt-2">Determina el riesgo de pérdida de visión por condiciones como glaucoma, cataratas o degeneración macular.</p>
+            </div>
+            <!-- Apendicitis -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-procedures mr-2"></i> Apendicitis
+                </a>
+                <p class="text-sm text-white text-center mt-2">Identifica la probabilidad de apendicitis basándose en síntomas como dolor abdominal, fiebre y marcadores inflamatorios.</p>
+            </div>
+            <!-- Alzheimer -->
+            <div class="flex flex-col items-center">
+                <a href="index.html" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-brain mr-2"></i> Alzheimer
+                </a>
+                <p class="text-sm text-white text-center mt-2">Evalúa el riesgo de desarrollar Alzheimer considerando factores genéticos, cognitivos y de estilo de vida.</p>
+            </div>
+            <!-- Asma -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-lungs mr-2"></i> Asma
+                </a>
+                <p class="text-sm text-white text-center mt-2">Predice la probabilidad de asma según factores ambientales, antecedentes familiares y síntomas respiratorios.</p>
+            </div>
+            <!-- Dengue -->
+            <div class="flex flex-col items-center">
+                <a href="#" class="prediction-link bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 text-base flex items-center w-full justify-center transform hover:scale-105">
+                    <i class="fas fa-bug mr-2"></i> Dengue
+                </a>
+                <p class="text-sm text-white text-center mt-2">Estima el riesgo de dengue basándose en síntomas como fiebre, dolor muscular y exposición a zonas endémicas.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado de Predicción</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet.js para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- jsPDF para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- QRCode.js para generar QR -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        /* Custom styles for the circular progress */
+        .progress-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .progress-circle svg {
+            transform: rotate(-90deg);
+        }
+        .progress-circle .circle-bg {
+            fill: none;
+            stroke: #e5e7eb;
+            stroke-width: 10;
+        }
+        .progress-circle .circle-fg {
+            fill: none;
+            stroke: #dc2626;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        .progress-circle .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        /* Custom styles for the framed container */
+        .framed-container {
+            background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .framed-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Custom styles for prediction links */
+        .prediction-link {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .prediction-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        /* Hidden canvas for QR code generation */
+        #qrCanvas {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-red-600 text-white p-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="VISIONSANA.jpg" alt="Logo" class="w-40">
+        </div>
+        <div class="flex items-center space-x-4">
+            <nav class="flex items-center space-x-4">
+                <a href="#" class="text-white hover:underline">Salir Sesión</a>
+                <a href="#" class="text-white hover:underline">Certificados</a>
+            </nav>
+            <div class="relative">
+                <input type="text" placeholder="Buscar..." class="pl-10 pr-4 py-2 rounded-full bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+            </div>
+            <div class="flex space-x-2">
+                <div class="bg-white rounded-full p-2">
+                    <i class="fas fa-bell text-red-600"></i>
+                </div>
+                <div class="bg-white rounded-full p-2">
+                    <i class="fas fa-user text-red-600"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Entrega de Certificados</h1>
+            <nav class="text-sm text-gray-500">
+                <a href="#" class="hover:underline">Inicio</a> / 
+                <a href="#" class="hover:underline">Certificados</a> / 
+                <span>Predicciones</span>
+            </nav>
+        </div>
+
+        <!-- Predicción destacada -->
+        <div class="bg-white shadow-lg rounded-lg p-8 mb-8">
+            <div class="flex items-start justify-between framed-container border-2 border-red-600 rounded-xl p-6 shadow-md">
+                <!-- Contenedor para el botón y recomendaciones (izquierda) -->
+                <div class="flex flex-col justify-center w-[200px] h-[200px] ml-4">
+                    <div class="flex flex-col items-start">
+                        <button id="downloadPdf" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200 mb-2">
+                            Descargar PDF
+                        </button>
+                        <div class="text-base text-gray-500 text-left">
+                            <p><strong>¿Por qué?</strong> Guarda tu predicción y encuesta para consultas médicas.</p>
+                            <p><strong>¿Cómo?</strong> Clic en el botón; se guarda como "Informe_Prediccion_Alzheimer.pdf".</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Contenedor para centrar el título y porcentaje -->
+                <div class="flex-1 flex flex-col items-center">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Predicción de Alzheimer</h2>
+                    <div class="flex flex-col items-center">
+                        <div class="progress-circle">
+                            <svg width="200" height="200">
+                                <circle class="circle-bg" cx="100" cy="100" r="95"></circle>
+                                <circle class="circle-fg" cx="100" cy="100" r="95" stroke-dasharray="0 597" stroke-dashoffset="0"></circle>
+                            </svg>
+                            <div class="percentage" id="resultado">0%</div>
+                        </div>
+                        <p class="text-gray-600 mt-4">Probabilidad calculada según el modelo</p>
+                    </div>
+                </div>
+                <!-- Contenedor para los enlaces y descripciones (derecha, dividido en dos columnas) -->
+                <div class="flex w-[280px] h-[200px] mr-0 mt-0 ml-4">
+                    <!-- Columna izquierda (3 enlaces) -->
+                    <div class="flex flex-col items-start w-1/2 pr-2">
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-tint mr-2"></i> Diabetes
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de diabetes.</p>
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-heartbeat mr-2"></i> Cardiovascular
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo cardiovascular.</p>
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-tint-slash mr-2"></i> Anemia
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de anemia.</p>
+                    </div>
+                    <!-- Columna derecha (3 enlaces) -->
+                    <div class="flex flex-col items-start w-1/2 pl-2">
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-disease mr-2"></i> Cáncer
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de cáncer.</p>
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-eye-slash mr-2"></i> Pérdida de Vista
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de pérdida de vista.</p>
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                            <i class="fas fa-procedures mr-2"></i> Apendicitis
+                        </a>
+                        <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de apendicitis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Izquierda: Estadísticas y Mapa -->
+            <div>
+                <!-- Estadísticas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    <!-- Probabilidad Promedio -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <i class="fas fa-chart-bar text-2xl text-red-600 mb-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Probabilidad Promedio</h3>
+                        <p class="text-3xl font-bold text-red-600">13,766</p>
+                        <p class="text-sm text-gray-500">Comparado con la población general</p>
+                    </div>
+                    <!-- Casos Similares -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <i class="fas fa-users text-2xl text-red-600 mb-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Casos Similares</h3>
+                        <p class="text-3xl font-bold text-red-600">145</p>
+                        <p class="text-sm text-gray-500">Pacientes con características similares</p>
+                    </div>
+                    <!-- Precisión del Modelo -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <i class="fas fa-check-circle text-2xl text-red-600 mb-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Precisión del Modelo</h3>
+                        <p class="text-3xl font-bold text-red-600">87%</p>
+                        <p class="text-sm text-gray-500">Confianza en la predicción</p>
+                    </div>
+                    <!-- Pacientes Evaluados -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <i class="fas fa-calendar text-2xl text-red-600 mb-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Pacientes Evaluados</h3>
+                        <p class="text-3xl font-bold text-red-600">2,418</p>
+                        <p class="text-sm text-gray-500">Total de pacientes analizados</p>
+                    </div>
+                </div>
+
+                <!-- Mapa Interactivo -->
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Hospitales Cercanos</h3>
+                    <div id="map" class="h-64 w-full rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Derecha: Gráficos y Recomendaciones -->
+            <div>
+                <!-- Gráficos -->
+                <div class="grid grid-cols-1 gap-6 mb-8">
+                    <!-- Gráfico 1: Distribución de Probabilidades -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Distribución de Probabilidades</h3>
+                        <canvas id="distribucionChart"></canvas>
+                    </div>
+                    <!-- Gráfico 2: Tendencia Temporal -->
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Tendencia Temporal</h3>
+                        <canvas id="tendenciaChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones de Hospitales -->
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Recomendaciones de Hospitales</h2>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><strong>Hospital Nacional Arzobispo Loayza</strong> - A 3 km, especializado en atención de emergencias y medicina general.</li>
+                            <li><strong>Hospital Nacional Dos de Mayo</strong> - A 4 km, ofrece servicios de especialidades médicas complejas.</li>
+                            <li><strong>Hospital Nacional Edgardo Rebagliati Martins</strong> - A 6 km, centro de referencia en tratamientos especializados.</li>
+                            <li><strong>Clínica San Pablo Surco</strong> - A 7 km, atención privada en cardiología y neurología.</li>
+                            <li><strong>Clínica Internacional Lima</strong> - A 5 km, diagnóstico avanzado y cirugías especializadas.</li>
+                        </ul>
+                        
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for QR code -->
+    <canvas id="qrCanvas"></canvas>
+
+    <!-- Script para mostrar la predicción -->
+    <script>
+        const porcentaje = localStorage.getItem('porcentajePrediccion') || 0;
+        const resultadoElement = document.getElementById('resultado');
+        const circleFg = document.querySelector('.circle-fg');
+        const circumference = 2 * Math.PI * 95;
+
+        resultadoElement.innerText = `${porcentaje}%`;
+        const dashArray = (porcentaje / 100) * circumference;
+        circleFg.style.strokeDasharray = `${dashArray} ${circumference}`;
+
+        if (porcentaje === 0) {
+            resultadoElement.innerText = 'No se encontró resultado de predicción.';
+            circleFg.style.strokeDasharray = `0 ${circumference}`;
+        }
+    </script>
+
+    <!-- Script para generar y descargar el PDF -->
+    <script>
+        document.getElementById('downloadPdf').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 10;
+            let yPosition = 20;
+
+            // Título
+            doc.setFontSize(18);
+            doc.text('Informe de Predicción de Alzheimer', margin, yPosition);
+            yPosition += 10;
+
+            // Línea separadora
+            doc.setLineWidth(0.5);
+            doc.line(margin, yPosition, 200, yPosition);
+            yPosition += 10;
+
+            // Porcentaje de predicción
+            doc.setFontSize(14);
+            doc.text('Resultado de la Predicción', margin, yPosition);
+            yPosition += 7;
+            doc.setFontSize(12);
+            const porcentaje = localStorage.getItem('porcentajePrediccion') || 'No disponible';
+            doc.text(`Probabilidad de Alzheimer: ${porcentaje}%`, margin, yPosition);
+            yPosition += 10;
+
+            // Línea separadora
+            doc.setLineWidth(0.2);
+            doc.line(margin, yPosition, 200, yPosition);
+            yPosition += 10;
+
+            // Recomendaciones
+            doc.setFontSize(14);
+            doc.text('Recomendaciones', margin, yPosition);
+            yPosition += 7;
+            doc.setFontSize(12);
+            const recommendations = [
+                'Consulta con un médico especialista para confirmar el riesgo.',
+                'Realiza chequeos periódicos para monitorear tu salud.',
+                'Adopta un estilo de vida saludable con dieta balanceada y ejercicio.',
+                'Evita factores de riesgo como el estrés y el consumo de alcohol.',
+                'Mantén un seguimiento con VisionSana para actualizaciones.'
+            ];
+            recommendations.forEach(recommendation => {
+                doc.text(`- ${recommendation}`, margin, yPosition);
+                yPosition += 7;
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+            });
+
+            yPosition += 5;
+            doc.setLineWidth(0.2);
+            doc.line(margin, yPosition, 200, yPosition);
+            yPosition += 10;
+
+            // Recomendaciones de hospitales
+            doc.setFontSize(14);
+            doc.text('Recomendaciones de Hospitales', margin, yPosition);
+            yPosition += 7;
+            doc.setFontSize(12);
+            const hospitals = [
+                'Hospital Nacional Arzobispo Loayza - A 3 km, especializado en atención de emergencias y medicina general.',
+                'Hospital Nacional Dos de Mayo - A 4 km, ofrece servicios de especialidades médicas complejas.',
+                'Hospital Nacional Edgardo Rebagliati Martins - A 6 km, centro de referencia en tratamientos especializados.',
+                'Clínica San Pablo Surco - A 7 km, atención privada en cardiología y neurología.',
+                'Clínica Internacional Lima - A 5 km, diagnóstico avanzado y cirugías especializadas.'
+            ];
+            hospitals.forEach(hospital => {
+                doc.text(`- ${hospital}`, margin, yPosition);
+                yPosition += 7;
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+            });
+
+            yPosition += 5;
+            doc.setLineWidth(0.2);
+            doc.line(margin, yPosition, 200, yPosition);
+            yPosition += 10;
+
+            // Generar QR Code para buscar hospitales cercanos en Google Maps
+            const googleMapsUrl = 'https://www.google.com/maps/search/hospitales+cerca+de+mi';
+            
+            // Generar QR Code en un canvas
+            const qrCanvas = document.getElementById('qrCanvas');
+            QRCode.toCanvas(qrCanvas, googleMapsUrl, { width: 100 }, function (error) {
+                if (error) {
+                    console.error('Error generando QR:', error);
+                    doc.text('No se pudo generar el QR.', margin, yPosition);
+                    doc.save('Informe_Prediccion_Alzheimer.pdf');
+                    return;
+                }
+
+                // Convertir el canvas a imagen y añadir al PDF
+                const qrImage = qrCanvas.toDataURL('image/png');
+                doc.setFontSize(14);
+                doc.text('Escanea el QR para buscar hospitales cercanos en Google Maps', margin, yPosition);
+                yPosition += 7;
+                doc.addImage(qrImage, 'PNG', margin, yPosition, 50, 50);
+                
+                // Guardar el PDF
+                doc.save('Informe_Prediccion_Alzheimer.pdf');
+            });
+        });
+    </script>
+
+    <!-- Script para los gráficos -->
+    <script>
+        // Gráfico 1: Distribución de Probabilidades
+        const distribucionCtx = document.getElementById('distribucionChart').getContext('2d');
+        new Chart(distribucionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'],
+                datasets: [{
+                    label: 'Número de Casos',
+                    data: [50, 30, 20, 15, 10],
+                    backgroundColor: 'rgba(220, 38, 38, 0.6)',
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Gráfico 2: Tendencia Temporal
+        const tendenciaCtx = document.getElementById('tendenciaChart').getContext('2d');
+        new Chart(tendenciaCtx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Probabilidad (%)',
+                    data: [10, 15, 13, 20, 18, 25],
+                    fill: false,
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+
+    <!-- Script para el mapa interactivo -->
+    <script>
+        const map = L.map('map').setView([-12.0464, -77.0428], 12); // Coordenadas de Lima, Perú
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Marcadores de hospitales en Lima
+        L.marker([-12.0453, -77.0311]).addTo(map)
+            .bindPopup('Hospital Nacional Arzobispo Loayza');
+        L.marker([-12.0587, -77.0365]).addTo(map)
+            .bindPopup('Hospital Nacional Dos de Mayo');
+        L.marker([-12.0720, -77.0760]).addTo(map)
+            .bindPopup('Hospital Nacional Edgardo Rebagliati Martins');
+        L.marker([-12.1110, -76.9942]).addTo(map)
+            .bindPopup('Clínica San Pablo Surco');
+        L.marker([-12.0862, -77.0344]).addTo(map)
+            .bindPopup('Clínica Internacional Lima');
+    </script>
+</body>
+</html>
