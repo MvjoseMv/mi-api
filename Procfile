@@ -1,1 +1,1 @@
-web: python api_modelo.py
+web: uvicorn api_modelo:app --host 0.0.0.0 --port ${PORT}
