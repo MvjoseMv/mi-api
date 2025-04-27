@@ -1,7 +1,7 @@
 document.getElementById("prediccion-form").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    // Recolecta los datos del formulario
+    // Recolecta los datos del formulario con valores por defecto
     const data = {
         Age: parseFloat(document.getElementById('age').value) || 0,
         Gender: parseInt(document.getElementById('gender').value) || 0,
@@ -36,11 +36,6 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         DifficultyCompletingTasks: parseInt(document.getElementById('difficultyCompletingTasks').value) || 0,
         Forgetfulness: parseInt(document.getElementById('forgetfulness').value) || 0
     };
-
-    // Define la URL dependiendo si estás en local o producción
-    const URL_API = window.location.hostname === 'localhost'
-        ? 'http://127.0.0.1:8000/predecir'
-        : 'https://tu-api.railway.app/predecir'; // Reemplaza con el URL de Railway
 
     // Realiza la solicitud a la API
     fetch(URL_API, {
