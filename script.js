@@ -3,7 +3,7 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
 
     // Recolecta los datos del formulario con valores por defecto
     const data = {
-        Age: parseFloat(document.getElementById('age').value) || ,
+        Age: parseFloat(document.getElementById('age').value) || 0,
         Gender: parseInt(document.getElementById('gender').value) || 0,
         Ethnicity: parseInt(document.getElementById('ethnicity').value) || 0,
         EducationLevel: parseFloat(document.getElementById('educationLevel').value) || 0,
