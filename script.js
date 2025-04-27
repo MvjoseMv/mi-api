@@ -42,6 +42,7 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         ? 'http://127.0.0.1:8000/predecir'
         : 'https://mi-api-production-1666.up.railway.app/predecir'; // Reemplaza con el URL real de Railway
 
+
     // Realiza la solicitud a la API
     fetch(URL_API, {
         method: 'POST',
