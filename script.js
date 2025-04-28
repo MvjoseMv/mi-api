@@ -37,10 +37,16 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         Forgetfulness: parseInt(document.getElementById('forgetfulness').value) || 0
     };
 
+    // Depuración: Verifica los datos que estás enviando
+    console.log("Datos a enviar:", data);
+
     // Define la URL dependiendo si estás en local o producción
     const URL_API = window.location.hostname === 'localhost'
         ? 'http://127.0.0.1:8000/predecir'
         : 'https://mi-api-production-1666.up.railway.app/predecir'; // Reemplaza con el URL real de Railway
+
+    // Depuración: Verifica la URL de la API
+    console.log("URL de la API:", URL_API);
 
     // Realiza la solicitud a la API
     fetch(URL_API, {
@@ -55,11 +61,19 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         return response.json();
     })
     .then(data => {
-        // Guardar el resultado de la predicción en localStorage
-        localStorage.setItem('porcentajePrediccion', data.probabilidad_alzheimer);
+        // Depuración: Verifica la respuesta de la API
+        console.log("Respuesta de la API:", data);
 
-        // Redirigir al usuario a la página de resultados
-        window.location.href = 'resultado.html';
+        if (data && data.probabilidad_alzheimer) {
+            // Guardar el resultado de la predicción en localStorage
+            localStorage.setItem('porcentajePrediccion', data.probabilidad_alzheimer);
+
+            // Redirigir al usuario a la página de resultados
+            window.location.href = 'resultado.html';
+        } else {
+            console.error("La respuesta no contiene probabilidad de Alzheimer");
+            alert("No se pudo obtener la predicción. Verifica que la respuesta de la API sea válida.");
+        }
     })
     .catch(error => {
         console.error('Error al realizar la predicción:', error);
