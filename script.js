@@ -43,7 +43,7 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
     // Define la URL dependiendo si estás en local o producción
     const URL_API = window.location.hostname === 'localhost'
         ? 'http://127.0.0.1:8000/predecir'
-        : 'https://mi-api-production-1666.up.railway.app/predecir'; // Reemplaza con el URL real de Railway
+        : 'https://mi-api-production-1666.up.railway.app/predecir'; // URL de la API en producción en Render
 
     // Depuración: Verifica la URL de la API
     console.log("URL de la API:", URL_API);
