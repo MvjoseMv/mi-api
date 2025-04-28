@@ -61,13 +61,13 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         return response.json();
     })
     .then(data => {
-        // Depuración: Verifica la respuesta de la API
+        // Verifica la respuesta de la API
         console.log("Respuesta de la API:", data);
 
-        if (data && data.probabilidad_alzheimer) {
+        // Asegúrate de que la respuesta contenga probabilidad_alzheimer
+        if (data && data.probabilidad_alzheimer !== undefined) {
             // Guardar el resultado de la predicción en localStorage
             localStorage.setItem('porcentajePrediccion', data.probabilidad_alzheimer);
-
             // Redirigir al usuario a la página de resultados
             window.location.href = 'resultado.html';
         } else {
