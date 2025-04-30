@@ -1,7 +1,7 @@
 document.getElementById("prediccion-form").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    // Recolecta los datos del formulario con valores por defecto
+    // Recolecta los datos del formulario con valores por defecto.
     const data = {
         Age: parseFloat(document.getElementById('age').value) || 0,
         Gender: parseInt(document.getElementById('gender').value) || 0,
