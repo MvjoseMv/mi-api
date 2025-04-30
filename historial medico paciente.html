@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del Paciente</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 200px;
+      background-color: #4a0e0e;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sidebar-item {
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background-color: white;
+      padding: 15px 30px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .patient-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #dc2626;
+    }
+    .user-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1f2937;
+    }
+    .user-role {
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .action-button {
+      background-color: #dc2626;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #b91c1c;
+    }
+    .main-content {
+      display: flex;
+      flex: 1;
+      padding: 20px;
+      gap: 20px;
+      overflow: hidden;
+    }
+    .left-section {
+      flex: 3;
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+    .right-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .right-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #374151;
+    }
+    .patient-info, .record-entry, .appointment-entry {
+      margin-bottom: 20px;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .patient-info:hover, .record-entry:hover, .appointment-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      transition: background-color 0.3s ease;
+    }
+    .info-row:hover {
+      background-color: #f0f0f0;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .info-label::before {
+      content: '•';
+      color: #dc2626;
+      font-size: 14px;
+    }
+    .info-value {
+      color: #1f2937;
+      font-weight: 500;
+      flex: 2;
+      text-align: right;
+    }
+    .record-date, .appointment-date {
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .record-detail, .appointment-detail {
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 5px;
+    }
+    .record-note {
+      color: #dc2626;
+      font-style: italic;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .message-form {
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #1f2937;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 5px rgba(220, 38, 38, 0.2);
+    }
+    .hidden {
+      display: none;
+    }
+    .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .chat-header {
+      background-color: #4a0e0e;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-body {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #fafafa;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 80%;
+    }
+    .chat-message.sent {
+      background-color: #dc2626;
+      color: white;
+      margin-left: auto;
+    }
+    .chat-message.received {
+      background-color: #e0e0e0;
+      color: #1f2937;
+      margin-right: auto;
+    }
+    .chat-footer {
+      padding: 10px;
+      background-color: white;
+      border-top: 1px solid #e0e0e0;
+    }
+    .chat-footer input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .chat-footer input:focus {
+      outline: none;
+      border-color: #dc2626;
+    }
+    .chat-close {
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-item" onclick="showSection('inicio')">Inicio</div>
+    <div class="sidebar-item" onclick="showSection('historial')">Historial Médico</div>
+    <div class="sidebar-item" onclick="showSection('citas')">Citas</div>
+    <div class="sidebar-item" onclick="showSection('mensajes')">Mensajes</div>
+    <div class="sidebar-item" onclick="showSection('configuracion')">Configuración</div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <div class="user-info">
+        <img src="paciente mujer.jpg" alt="Foto del Paciente" class="patient-photo">
+        <div>
+          <div class="user-name">Ana Gómez Sánchez</div>
+          <div class="user-role">Paciente</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="action-button" onclick="window.location.href='interfaz paciente.html'">Predicciones</div>
+        <div class="action-button" onclick="window.location.href='login.html'">Cerrar Sesión</div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="left-section">
+        <div id="inicio-section">
+          <div class="section-title">Perfil del Paciente</div>
+          <div class="patient-info">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">Ana Gómez Sánchez</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Edad:</span>
+              <span class="info-value">32 años</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Género:</span>
+              <span class="info-value">Femenino</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">DNI:</span>
+              <span class="info-value">87654321</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono:</span>
+              <span class="info-value">+51 912 345 678</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Correo:</span>
+              <span class="info-value">ana.gomez@example.com</span>
+            </div>
+          </div>
+          <div class="section-title">Próxima Cita</div>
+          <div class="appointment-entry">
+            <div class="appointment-date">01/05/2025</div>
+            <div class="appointment-detail">Hora: 08:00</div>
+            <div class="appointment-detail">Médico: Dr. Eduardo Manuel</div>
+            <div class="appointment-detail">Motivo: Seguimiento de infección respiratoria</div>
+          </div>
+        </div>
+
+        <div id="historial-section" class="hidden">
+          <div class="section-title">Historial Médico</div>
+          <div class="record-entry">
+            <div class="record-date">25/04/2025</div>
+            <div class="record-detail">Motivo: Fiebre y tos persistente</div>
+            <div class="record-detail">Diagnóstico: Infección respiratoria aguda</div>
+            <div class="record-detail">Tratamiento: Amoxicilina 500 mg cada 8 horas por 7 días, reposo</div>
+            <div class="record-note">Nota: Seguimiento en 5 días si los síntomas persisten</div>
+          </div>
+          <div class="record-entry">
+            <div class="record-date">15/06/2018</div>
+            <div class="record-detail">Motivo: Dolor abdominal</div>
+            <div class="record-detail">Diagnóstico: Gastritis aguda</div>
+            <div class="record-detail">Tratamiento: Omeprazol 20 mg diario por 4 semanas, dieta blanda</div>
+            <div class="record-note">Nota: Evitar alimentos irritantes</div>
+          </div>
+          <div class="record-entry">
+            <div class="record-date">03/02/2010</div>
+            <div class="record-detail">Motivo: Fractura de muñeca</div>
+            <div class="record-detail">Tratamiento: Inmovilización por 6 semanas, fisioterapia posterior</div>
+            <div class="record-note">Nota: Recuperación completa</div>
+          </div>
+          <div class="record-entry">
+            <div class="record-date">12/09/2005</div>
+            <div class="record-detail">Motivo: Varicela</div>
+            <div class="record-detail">Tratamiento: Antihistamínicos, reposo</div>
+            <div class="record-note">Nota: Sin complicaciones</div>
+          </div>
+          <div class="record-entry">
+            <div class="record-date">20/03/1995</div>
+            <div class="record-detail">Motivo: Vacunación infantil</div>
+            <div class="record-detail">Detalles: Completada BCG, Hepatitis B</div>
+          </div>
+          <div class="record-entry">
+            <div class="record-date">15/05/1993</div>
+            <div class="record-detail">Evento: Nacimiento</div>
+            <div class="record-detail">Detalles: Peso 3.2 kg, sin complicaciones</div>
+          </div>
+          <button class="action-button" onclick="generateMedicalHistory()">Descargar Historial Médico</button>
+        </div>
+
+        <div id="citas-section" class="hidden">
+          <div class="section-title">Citas Agendadas</div>
+          <div class="appointment-entry">
+            <div class="appointment-date">01/05/2025</div>
+            <div class="appointment-detail">Hora: 08:00</div>
+            <div class="appointment-detail">Médico: Dr. Eduardo Manuel</div>
+            <div class="appointment-detail">Motivo: Seguimiento de infección respiratoria</div>
+          </div>
+          <div class="appointment-entry">
+            <div class="appointment-date">14/04/2025</div>
+            <div class="appointment-detail">Hora: 08:30</div>
+            <div class="appointment-detail">Médico: Dr. Eduardo Manuel</div>
+            <div class="appointment-detail">Motivo: Consulta general</div>
+          </div>
+          <button class="action-button" onclick="generateAppointmentsPDF()">Descargar Resumen de Citas</button>
+        </div>
+
+        <div id="mensajes-section" class="hidden">
+          <div class="section-title">Mensajes</div>
+          <div class="message-form">
+            <div class="form-group">
+              <label for="message-doctor">Seleccionar Médico</label>
+              <select id="message-doctor" required>
+                <option value="" disabled selected>Seleccione un médico</option>
+                <option value="Dr. Eduardo Manuel">Dr. Eduardo Manuel</option>
+                <option value="Dra. Sofía Torres">Dra. Sofía Torres</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message-content">Enviar Mensaje</label>
+              <textarea id="message-content" rows="5" placeholder="Escriba su mensaje aquí..."></textarea>
+            </div>
+            <button class="action-button" onclick="sendMessage()">Enviar Mensaje</button>
+          </div>
+          <div class="section-title">Mensajes Recibidos</div>
+          <div class="record-entry">
+            <div class="record-date">27/04/2025</div>
+            <div class="record-detail">De: Dr. Eduardo Manuel</div>
+            <div class="record-detail">Mensaje: Por favor, continúe con el tratamiento de Amoxicilina y programe una cita de seguimiento.</div>
+          </div>
+        </div>
+
+        <div id="configuracion-section" class="hidden">
+          <div class="section-title">Configuración</div>
+          <div class="patient-info">
+            <div class="section-title">Perfil</div>
+            <div class="form-group">
+              <label for="config-email">Correo Electrónico</label>
+              <input type="email" id="config-email" value="ana.gomez@example.com">
+            </div>
+            <div class="form-group">
+              <label for="config-phone">Teléfono</label>
+              <input type="tel" id="config-phone" value="+51 912 345 678">
+            </div>
+            <button class="action-button" onclick="alert('Cambios guardados.')">Guardar Cambios</button>
+          </div>
+          <div class="patient-info">
+            <div class="section-title">Seguridad</div>
+            <div class="form-group">
+              <label for="config-password">Cambiar Contraseña</label>
+              <input type="password" id="config-password" placeholder="Nueva contraseña">
+            </div>
+            <div class="form-group">
+              <label for="config-password-confirm">Confirmar Contraseña</label>
+              <input type="password" id="config-password-confirm" placeholder="Confirmar nueva contraseña">
+            </div>
+            <button class="action-button" onclick="alert('Contraseña actualizada.')">Actualizar Contraseña</button>
+          </div>
+        </div>
+      </div>
+      <div class="right-section">
+        <div class="right-card">
+          <div class="section-title">Acciones Rápidas</div>
+          <div class="action-button" onclick="showSection('citas')">Ver Citas</div>
+          <div class="action-button" style="margin-top: 10px;" onclick="showSection('mensajes')">Enviar Mensaje</div>
+          <div class="action-button" style="margin-top: 10px;" onclick="generateMedicalHistory()">Descargar Historial</div>
+        </div>
+      </div>
+    </div>
+    <div id="chat-container" class="chat-container hidden">
+      <div class="chat-header">
+        <span id="chat-doctor-name">Chat</span>
+        <span class="chat-close" onclick="toggleChat()">×</span>
+      </div>
+      <div class="chat-body" id="chat-body"></div>
+      <div class="chat-footer">
+        <input type="text" id="chat-input" placeholder="Escriba un mensaje...">
+      </div>
+    </div>
+  </div>
+  <script>
+    const patientData = {
+      name: "Ana Gómez Sánchez",
+      age: 32,
+      gender: "Femenino",
+      dni: "87654321",
+      medicalHistory: [
+        {
+          date: "25/04/2025",
+          motivo: "Fiebre y tos persistente",
+          diagnostico: "Infección respiratoria aguda",
+          tratamiento: "Amoxicilina 500 mg cada 8 horas por 7 días, reposo",
+          nota: "Seguimiento en 5 días si los síntomas persisten"
+        },
+        {
+          date: "15/06/2018",
+          motivo: "Dolor abdominal",
+          diagnostico: "Gastritis aguda",
+          tratamiento: "Omeprazol 20 mg diario por 4 semanas, dieta blanda",
+          nota: "Evitar alimentos irritantes"
+        },
+        {
+          date: "03/02/2010",
+          motivo: "Fractura de muñeca",
+          tratamiento: "Inmovilización por 6 semanas, fisioterapia posterior",
+          nota: "Recuperación completa"
+        },
+        {
+          date: "12/09/2005",
+          motivo: "Varicela",
+          tratamiento: "Antihistamínicos, reposo",
+          nota: "Sin complicaciones"
+        },
+        {
+          date: "20/03/1995",
+          motivo: "Vacunación infantil",
+          detalles: "Completada BCG, Hepatitis B"
+        },
+        {
+          date: "15/05/1993",
+          evento: "Nacimiento",
+          detalles: "Peso 3.2 kg, sin complicaciones"
+        }
+      ],
+      appointments: [
+        {
+          date: "01/05/2025",
+          time: "08:00",
+          doctor: "Dr. Eduardo Manuel",
+          motivo: "Seguimiento de infección respiratoria"
+        },
+        {
+          date: "14/04/2025",
+          time: "08:30",
+          doctor: "Dr. Eduardo Manuel",
+          motivo: "Consulta general"
+        }
+      ],
+      messages: [
+        {
+          date: "27/04/2025",
+          from: "Dr. Eduardo Manuel",
+          content: "Por favor, continúe con el tratamiento de Amoxicilina y programe una cita de seguimiento.",
+          type: "received"
+        }
+      ]
+    };
+
+    function showSection(section) {
+      const sections = ['inicio', 'historial', 'citas', 'mensajes', 'configuracion'];
+      sections.forEach(s => {
+        const sectionElement = document.getElementById(`${s}-section`);
+        sectionElement.classList.toggle('hidden', s !== section);
+      });
+    }
+
+    function generateMedicalHistory() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFillColor(74, 14, 14); // #4a0e0e
+      doc.rect(0, 0, 210, 40, 'F');
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`Historial Médico de ${patientData.name}`, 20, 25);
+      doc.setFontSize(12);
+      doc.text('Sistema de Gestión Médica', 20, 35);
+
+      // Patient Info
+      doc.setFillColor(250, 250, 250); // #fafafa
+      doc.rect(20, 50, 170, 40, 'F');
+      doc.setDrawColor(220, 38, 38); // #dc2626
+      doc.setLineWidth(0.5);
+      doc.rect(20, 50, 170, 40);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(31, 41, 55); // #1f2937
+      doc.text(`Edad: ${patientData.age} años`, 25, 60);
+      doc.text(`Género: ${patientData.gender}`, 25, 65);
+      doc.text(`DNI: ${patientData.dni}`, 25, 70);
+      doc.text(`Fecha de Nacimiento: ${2025 - patientData.age}`, 25, 75);
+
+      // Medical History Header
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(55, 65, 81); // #374151
+      doc.text('Historial Médico', 20, 100);
+
+      // Medical History Entries
+      let yPos = 110;
+      patientData.medicalHistory.forEach((record, index) => {
+        if (yPos > 260) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.setFillColor(index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255);
+        doc.rect(20, yPos, 170, record.evento ? 25 : record.nota ? 45 : 35, 'F');
+        doc.setDrawColor(220, 38, 38);
+        doc.setLineWidth(0.2);
+        doc.rect(20, yPos, 170, record.evento ? 25 : record.nota ? 45 : 35);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(31, 41, 55);
+        doc.text(`Fecha: ${record.date}`, 25, yPos + 10);
+        if (record.evento) {
+          doc.text(`Evento: ${record.evento}`, 25, yPos + 15);
+          doc.text(`Detalles: ${record.detalles}`, 25, yPos + 20);
+        } else {
+          doc.text(`Motivo: ${record.motivo}`, 25, yPos + 15);
+          if (record.diagnostico) doc.text(`Diagnóstico: ${record.diagnostico}`, 25, yPos + 20);
+          doc.text(`Tratamiento: ${record.tratamiento}`, 25, yPos + (record.diagnostico ? 25 : 20));
+          if (record.nota) {
+            doc.setTextColor(220, 38, 38);
+            doc.setFont('helvetica', 'italic');
+            doc.text(`Nota: ${record.nota}`, 25, yPos + (record.diagnostico ? 30 : 25));
+            doc.setTextColor(31, 41, 55);
+            doc.setFont('helvetica', 'normal');
+          }
+        }
+        yPos += record.evento ? 30 : record.nota ? 50 : 40;
+      });
+
+      // Footer
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(107, 114, 128); // #6b7280
+      doc.text('Generado el 28 de Abril de 2025', 20, 280);
+      doc.text('Sistema de Gestión Médica - Hospital Nacional Arzobispo Loayza', 20, 285);
+
+      doc.save(`Historial_Medico_${patientData.name}.pdf`);
+    }
+
+    function generateAppointmentsPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFillColor(74, 14, 14);
+      doc.rect(0, 0, 210, 40, 'F');
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text('Resumen de Citas Agendadas', 20, 25);
+      doc.setFontSize(12);
+      doc.text(`Paciente: ${patientData.name}`, 20, 35);
+
+      // Patient Info
+      doc.setFontSize(12);
+      doc.setTextColor(31, 41, 55);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`DNI: ${patientData.dni}`, 20, 50);
+
+      // Table Header
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, 60, 170, 10, 'F');
+      doc.setTextColor(55, 65, 81);
+      doc.text('Fecha', 25, 67);
+      doc.text('Hora', 70, 67);
+      doc.text('Médico', 110, 67);
+      doc.text('Motivo', 150, 67);
+
+      // Table Content
+      let yPos = 75;
+      patientData.appointments.forEach((appt, index) => {
+        doc.setFillColor(index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255);
+        doc.rect(20, yPos, 170, 10, 'F');
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(31, 41, 55);
+        doc.text(appt.date, 25, yPos + 7);
+        doc.text(appt.time, 70, yPos + 7);
+        doc.text(appt.doctor, 110, yPos + 7);
+        doc.text(appt.motivo.substring(0, 20) + (appt.motivo.length > 20 ? '...' : ''), 150, yPos + 7);
+        yPos += 10;
+      });
+
+      // Footer
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(107, 114, 128);
+      doc.text('Generado el 28 de Abril de 2025', 20, 280);
+      doc.text('Sistema de Gestión Médica', 20, 285);
+
+      doc.save(`Resumen_Citas_${patientData.name}.pdf`);
+    }
+
+    function sendMessage() {
+      const doctor = document.getElementById('message-doctor').value;
+      const message = document.getElementById('message-content').value;
+      if (doctor && message) {
+        const newMessage = {
+          date: new Date().toLocaleDateString('es-ES'),
+          from: patientData.name,
+          to: doctor,
+          content: message,
+          type: 'sent'
+        };
+        patientData.messages.push(newMessage);
+        alert(`Mensaje enviado a ${doctor}.`);
+        document.getElementById('message-content').value = '';
+        openChat(doctor);
+        renderChatMessages();
+      } else {
+        alert('Por favor, seleccione un médico y escriba un mensaje.');
+      }
+    }
+
+    function openChat(doctor) {
+      const chatContainer = document.getElementById('chat-container');
+      const chatDoctorName = document.getElementById('chat-doctor-name');
+      chatContainer.classList.remove('hidden');
+      chatDoctorName.textContent = `Chat con ${doctor}`;
+      renderChatMessages(doctor);
+      document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+          const newMessage = {
+            date: new Date().toLocaleDateString('es-ES'),
+            from: patientData.name,
+            to: doctor,
+            content: this.value.trim(),
+            type: 'sent'
+          };
+          patientData.messages.push(newMessage);
+          this.value = '';
+          renderChatMessages(doctor);
+        }
+      });
+    }
+
+    function toggleChat() {
+      const chatContainer = document.getElementById('chat-container');
+      chatContainer.classList.toggle('hidden');
+    }
+
+    function renderChatMessages(doctor) {
+      const chatBody = document.getElementById('chat-body');
+      chatBody.innerHTML = '';
+      const relevantMessages = patientData.messages.filter(msg => msg.from === doctor || msg.to === doctor);
+      relevantMessages.forEach(msg => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${msg.type}`;
+        messageDiv.innerHTML = `
+          <div style="font-size: 10px; color: ${msg.type === 'sent' ? '#ffffff' : '#6b7280'}">${msg.date}</div>
+          <div>${msg.content}</div>
+        `;
+        chatBody.appendChild(messageDiv);
+      });
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      showSection('inicio');
+    });
+  </script>
+</body>
+</html>
