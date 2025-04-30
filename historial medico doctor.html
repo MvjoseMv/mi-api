@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del Doctor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #4a0e0e;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sidebar-item {
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background-color: white;
+      padding: 15px 30px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .doctor-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #dc2626;
+    }
+    .user-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1f2937;
+    }
+    .user-role {
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .action-button {
+      background-color: #dc2626;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #b91c1c;
+    }
+    .main-content {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+      padding: 20px;
+      gap: 20px;
+      overflow: hidden;
+    }
+    .left-section {
+      flex: 1;
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+    .right-section {
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+    .right-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-enabled {
+      background-color: #22c55e;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .doctor-info, .workplace-entry, .current-workplace {
+      margin-bottom: 20px;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .doctor-info:hover, .workplace-entry:hover, .current-workplace:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      transition: background-color 0.3s ease;
+    }
+    .info-row:hover {
+      background-color: #f0f0f0;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .info-label::before {
+      content: '•';
+      color: #dc2626;
+      font-size: 14px;
+    }
+    .info-value {
+      color: #1f2937;
+      font-weight: 500;
+      flex: 2;
+      text-align: right;
+    }
+    .patient-records {
+      margin-bottom: 20px;
+    }
+    .record-entry {
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .record-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .record-date {
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .record-detail {
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 5px;
+    }
+    .record-note {
+      color: #dc2626;
+      font-style: italic;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .patient-management {
+      margin-bottom: 20px;
+    }
+    .patient-form {
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #1f2937;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 5px rgba(220, 38, 38, 0.2);
+    }
+    .patient-list {
+      margin-top: 20px;
+    }
+    .patient-entry {
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .patient-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .patient-info {
+      flex: 1;
+    }
+    .patient-name {
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .patient-detail {
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 5px;
+    }
+    .history-button, .whatsapp-button {
+      background-color: #dc2626;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .whatsapp-button {
+      background-color: #25D366;
+    }
+    .history-button:hover {
+      background-color: #b91c1c;
+    }
+    .whatsapp-button:hover {
+      background-color: #20b858;
+    }
+    .hidden {
+      display: none;
+    }
+    .calendar-container {
+      margin-bottom: 20px;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+    }
+    .calendar-day {
+      padding: 10px;
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .calendar-day.header {
+      background-color: #dc2626;
+      color: white;
+      font-weight: bold;
+      cursor: default;
+    }
+    .calendar-day.empty {
+      background-color: #f0f0f0;
+      cursor: default;
+    }
+    .calendar-day.has-appointment {
+      background-color: #fee2e2;
+      font-weight: bold;
+    }
+    .calendar-day:hover:not(.header):not(.empty) {
+      background-color: #e5e7eb;
+    }
+    .expanded-day {
+      margin-top: 20px;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .expanded-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .appointment-slot {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      margin-bottom: 10px;
+    }
+    .appointment-slot.booked {
+      background-color: #fee2e2;
+    }
+    .appointment-slot.free {
+      background-color: #ecfccb;
+    }
+    .schedule-form {
+      margin-top: 20px;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .config-section {
+      margin-bottom: 20px;
+      background-color: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toggle-switch input {
+      width: 40px;
+      height: 20px;
+      appearance: none;
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .toggle-switch input:checked {
+      background-color: #dc2626;
+    }
+    .toggle-switch input::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s ease;
+    }
+    .toggle-switch input:checked::before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-item" onclick="showSection('inicio')">Inicio</div>
+    <div class="sidebar-item" onclick="showSection('pacientes')">Pacientes</div>
+    <div class="sidebar-item" onclick="showSection('informacion-laboral')">Información Laboral</div>
+    <div class="sidebar-item" onclick="showSection('citas')">Citas</div>
+    <div class="sidebar-item" onclick="showSection('configuracion')">Configuración</div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <div class="user-info">
+        <img src="doctor foto.jpg" alt="Foto del Doctor" class="doctor-photo">
+        <div>
+          <div class="user-name">Dr. Eduardo Manuel</div>
+          <div class="user-role">Médico General</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="action-button" onclick="window.location.href='interfaz.html'">Predicciones</div>
+        <div class="action-button" onclick="window.location.href='login.html'">Cerrar Sesión</div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="left-section">
+        <div id="inicio-section">
+          <div class="section-title">
+            Perfil del Doctor
+            <span class="status-enabled">Habilitado</span>
+          </div>
+          <div class="doctor-info">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">Dr. Eduardo Manuel Vargas</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Sexo:</span>
+              <span class="info-value">Masculino</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Especialidad:</span>
+              <span class="info-value">Medicina General</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Lugar de Trabajo:</span>
+              <span class="info-value">Hospital Nacional Arzobispo Loayza, Lima</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Correo:</span>
+              <span class="info-value">dr.eduardo.manuel@hospitaloayza.pe</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono:</span>
+              <span class="info-value">+51 987 654 321</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Años de Experiencia:</span>
+              <span class="info-value">15 años</span>
+            </div>
+          </div>
+          <div class="patient-records">
+            <div class="section-title">Últimos Registros de Pacientes</div>
+            <div class="record-entry">
+              <div class="record-date">25/04/2025</div>
+              <div class="record-detail">Paciente: Ana Gómez (F, 32 años)</div>
+              <div class="record-detail">Motivo: Fiebre y tos persistente.</div>
+              <div class="record-detail">Diagnóstico: Infección respiratoria aguda.</div>
+              <div class="record-detail">Tratamiento: Amoxicilina 500 mg cada 8 horas por 7 días, reposo.</div>
+              <div class="record-note">Nota: Seguimiento en 5 días si los síntomas persisten.</div>
+            </div>
+            <div class="record-entry">
+              <div class="record-date">22/04/2025</div>
+              <div class="record-detail">Paciente: Luis Rodríguez (M, 50 años)</div>
+              <div class="record-detail">Motivo: Dolor abdominal intenso.</div>
+              <div class="record-detail">Diagnóstico: Sospecha de apendicitis.</div>
+              <div class="record-detail">Acción: Referido a cirugía para evaluación urgente.</div>
+              <div class="record-note">Nota: Ecografía abdominal pendiente.</div>
+            </div>
+            <div class="record-entry">
+              <div class="record-date">20/04/2025</div>
+              <div class="record-detail">Paciente: María López (F, 28 años)</div>
+              <div class="record-detail">Motivo: Control prenatal.</div>
+              <div class="record-detail">Examen: Frecuencia cardíaca fetal normal, presión arterial 110/70 mmHg.</div>
+              <div class="record-detail">Recomendación: Continuar con vitaminas prenatales.</div>
+            </div>
+            <div class="record-entry">
+              <div class="record-date">18/04/2025</div>
+              <div class="record-detail">Paciente: Carlos Fernández (M, 65 años)</div>
+              <div class="record-detail">Motivo: Hipertensión no controlada.</div>
+              <div class="record-detail">Examen: Presión arterial 150/95 mmHg.</div>
+              <div class="record-detail">Tratamiento: Ajuste de dosis de Losartán a 100 mg diario.</div>
+              <div class="record-note">Nota: Control en 2 semanas.</div>
+            </div>
+            <div class="record-entry">
+              <div class="record-date">15/04/2025</div>
+              <div class="record-detail">Paciente: Sofía Torres (F, 40 años)</div>
+              <div class="record-detail">Motivo: Fatiga y mareos.</div>
+              <div class="record-detail">Examen: Hemoglobina 10.5 g/dL.</div>
+              <div class="record-detail">Diagnóstico: Anemia leve.</div>
+              <div class="record-detail">Tratamiento: Suplemento de hierro 325 mg diario por 1 mes.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pacientes-section" class="patient-management hidden">
+          <div class="section-title">Gestión de Pacientes</div>
+          <div class="patient-form">
+            <div class="section-title">Registrar Nuevo Paciente</div>
+            <div class="form-group">
+              <label for="patient-name">Nombre Completo</label>
+              <input type="text" id="patient-name" placeholder="Ej. Juan Pérez" required>
+            </div>
+            <div class="form-group">
+              <label for="patient-age">Edad</label>
+              <input type="number" id="patient-age" placeholder="Ej. 45" required>
+            </div>
+            <div class="form-group">
+              <label for="patient-sex">Sexo</label>
+              <select id="patient-sex" required>
+                <option value="" disabled selected>Seleccione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="patient-dni">DNI</label>
+              <input type="text" id="patient-dni" placeholder="Ej. 12345678" required>
+            </div>
+            <div class="form-group">
+              <label for="patient-contact">Teléfono</label>
+              <input type="tel" id="patient-contact" placeholder="Ej. +51 987 654 321" required>
+            </div>
+            <button class="action-button" onclick="registerPatient()">Registrar Paciente</button>
+          </div>
+          <div class="patient-list">
+            <div class="section-title">Pacientes Registrados</div>
+            <div id="patient-list-container">
+              <div class="patient-entry">
+                <div class="patient-info">
+                  <div class="patient-name">Ana Gómez</div>
+                  <div class="patient-detail">Edad: 32 años</div>
+                  <div class="patient-detail">Sexo: Femenino</div>
+                  <div class="patient-detail">DNI: 87654321</div>
+                  <div class="patient-detail">Teléfono: +51 912 345 678</div>
+                </div>
+                <div>
+                  <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=Ana%20Gómez&phone=%2B51912345678'">Enviar al WhatsApp</button>
+                  <button class="history-button" onclick="generateMedicalHistory('Ana Gómez', 32, 'Femenino', '87654321')">Historial Médico</button>
+                </div>
+              </div>
+              <div class="patient-entry">
+                <div class="patient-info">
+                  <div class="patient-name">Luis Rodríguez</div>
+                  <div class="patient-detail">Edad: 50 años</div>
+                  <div class="patient-detail">Sexo: Masculino</div>
+                  <div class="patient-detail">DNI: 76543210</div>
+                  <div class="patient-detail">Teléfono: +51 923 456 789</div>
+                </div>
+                <div>
+                  <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=Luis%20Rodríguez&phone=%2B51923456789'">Enviar al WhatsApp</button>
+                  <button class="history-button" onclick="generateMedicalHistory('Luis Rodríguez', 50, 'Masculino', '76543210')">Historial Médico</button>
+                </div>
+              </div>
+              <div class="patient-entry">
+                <div class="patient-info">
+                  <div class="patient-name">María López</div>
+                  <div class="patient-detail">Edad: 28 años</div>
+                  <div class="patient-detail">Sexo: Femenino</div>
+                  <div class="patient-detail">DNI: 65432109</div>
+                  <div class="patient-detail">Teléfono: +51 934 567 890</div>
+                </div>
+                <div>
+                  <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=María%20López&phone=%2B51934567890'">Enviar al WhatsApp</button>
+                  <button class="history-button" onclick="generateMedicalHistory('María López', 28, 'Femenino', '65432109')">Historial Médico</button>
+                </div>
+              </div>
+              <div class="patient-entry">
+                <div class="patient-info">
+                  <div class="patient-name">Carlos Fernández</div>
+                  <div class="patient-detail">Edad: 65 años</div>
+                  <div class="patient-detail">Sexo: Masculino</div>
+                  <div class="patient-detail">DNI: 54321098</div>
+                  <div class="patient-detail">Teléfono: +51 945 678 901</div>
+                </div>
+                <div>
+                  <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=Carlos%20Fernández&phone=%2B51945678901'">Enviar al WhatsApp</button>
+                  <button class="history-button" onclick="generateMedicalHistory('Carlos Fernández', 65, 'Masculino', '54321098')">Historial Médico</button>
+                </div>
+              </div>
+              <div class="patient-entry">
+                <div class="patient-info">
+                  <div class="patient-name">Sofía Torres</div>
+                  <div class="patient-detail">Edad: 40 años</div>
+                  <div class="patient-detail">Sexo: Femenino</div>
+                  <div class="patient-detail">DNI: 43210987</div>
+                  <div class="patient-detail">Teléfono: +51 956 789 012</div>
+                </div>
+                <div>
+                  <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=Sofía%20Torres&phone=%2B51956789012'">Enviar al WhatsApp</button>
+                  <button class="history-button" onclick="generateMedicalHistory('Sofía Torres', 40, 'Femenino', '43210987')">Historial Médico</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="informacion-laboral-section" class="hidden">
+          <div class="section-title">Información Laboral</div>
+          <div class="current-workplace">
+            <div class="section-title">Lugar de Trabajo Actual</div>
+            <div class="info-row">
+              <span class="info-label">Hospital:</span>
+              <span class="info-value">Hospital Nacional Arzobispo Loayza</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Ubicación:</span>
+              <span class="info-value">Av. Alfonso Ugarte 848, Cercado de Lima, Lima, Perú</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Inicio:</span>
+              <span class="info-value">Enero 2015 - Presente</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Departamento:</span>
+              <span class="info-value">Medicina General</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rol:</span>
+              <span class="info-value">Médico General</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Responsabilidades:</span>
+              <span class="info-value">Diagnóstico y tratamiento de pacientes, derivaciones, seguimiento de casos crónicos</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Sala Asignada:</span>
+              <span class="info-value">Sala de Consulta Externa - Edificio Principal, Piso 3, Consultorio 305</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Horario:</span>
+              <span class="info-value">Lunes a Viernes: 8:00 AM - 2:00 PM, Sábados: 8:00 AM - 12:00 PM</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Notas:</span>
+              <span class="info-value">Participa en reuniones semanales del comité de salud los jueves a las 3:00 PM</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono del Hospital:</span>
+              <span class="info-value">+51 1 614 9200</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Extensión:</span>
+              <span class="info-value">305 (Consultorio de Medicina General)</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Correo Institucional:</span>
+              <span class="info-value">dr.eduardo.manuel@hospitaloayza.pe</span>
+            </div>
+          </div>
+          <div class="section-title">Historial de Lugares de Trabajo</div>
+          <div class="workplace-entry">
+            <div class="info-row">
+              <span class="info-label">Clínica:</span>
+              <span class="info-value">Clínica San Pablo, Surco, Lima</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Período:</span>
+              <span class="info-value">Junio 2010 - Diciembre 2014</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rol:</span>
+              <span class="info-value">Médico General</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Responsabilidades:</span>
+              <span class="info-value">Atención primaria, consultas externas, emergencias menores</span>
+            </div>
+          </div>
+          <div class="workplace-entry">
+            <div class="info-row">
+              <span class="info-label">Hospital:</span>
+              <span class="info-value">Hospital María Auxiliadora, San Juan de Miraflores, Lima</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Período:</span>
+              <span class="info-value">Julio 2007 - Mayo 2010</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rol:</span>
+              <span class="info-value">Médico Residente - Medicina General</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Responsabilidades:</span>
+              <span class="info-value">Asistencia en consultas, apoyo en emergencias, rotación en diferentes departamentos</span>
+            </div>
+          </div>
+          <div class="workplace-entry">
+            <div class="info-row">
+              <span class="info-label">Clínica:</span>
+              <span class="info-value">Clínica Centenario Peruano Japonesa, Pueblo Libre, Lima</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Período:</span>
+              <span class="info-value">Enero 2006 - Junio 2007</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rol:</span>
+              <span class="info-value">Médico Interno</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Responsabilidades:</span>
+              <span class="info-value">Apoyo en consultas, observación y aprendizaje en medicina general</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="citas-section" class="hidden">
+          <div class="section-title">Citas Agendadas - Abril 2025</div>
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <span>Abril 2025</span>
+              <button class="action-button" onclick="resetCalendar()">Volver al Mes</button>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+          </div>
+          <div id="expanded-day-view" class="expanded-day hidden"></div>
+        </div>
+
+        <div id="configuracion-section" class="hidden">
+          <div class="section-title">Configuración</div>
+          
+          <div class="config-section">
+            <div class="section-title">Perfil</div>
+            <div class="form-group">
+              <label for="config-email">Correo Electrónico</label>
+              <input type="email" id="config-email" value="dr.eduardo.manuel@hospitaloayza.pe">
+            </div>
+            <div class="form-group">
+              <label for="config-phone">Teléfono</label>
+              <input type="tel" id="config-phone" value="+51 987 654 321">
+            </div>
+            <button class="action-button">Guardar Cambios</button>
+          </div>
+
+          <div class="config-section">
+            <div class="section-title">Horario de Trabajo</div>
+            <div class="form-group">
+              <label for="config-weekdays">Lunes a Viernes</label>
+              <select id="config-weekdays-start">
+                <option value="08:00" selected>08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+              </select>
+              <span> a </span>
+              <select id="config-weekdays-end">
+                <option value="14:00" selected>14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="config-saturday">Sábados</label>
+              <select id="config-saturday-start">
+                <option value="08:00" selected>08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+              </select>
+              <span> a </span>
+              <select id="config-saturday-end">
+                <option value="12:00" selected>12:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+              </select>
+            </div>
+            <button class="action-button">Actualizar Horario</button>
+          </div>
+
+          <div class="config-section">
+            <div class="section-title">Notificaciones</div>
+            <div class="form-group">
+              <label>Recibir notificaciones de citas nuevas</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="notif-appointments" checked>
+                <span>Activar</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recibir recordatorios de pacientes</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="notif-reminders" checked>
+                <span>Activar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <div class="section-title">Tema y Visualización</div>
+            <div class="form-group">
+              <label for="config-theme">Tema</label>
+              <select id="config-theme">
+                <option value="light" selected>Claro</option>
+                <option value="dark">Oscuro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="config-font-size">Tamaño de Fuente</label>
+              <select id="config-font-size">
+                <option value="small">Pequeño</option>
+                <option value="medium" selected>Mediano</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <div class="section-title">Seguridad</div>
+            <div class="form-group">
+              <label for="config-password">Cambiar Contraseña</label>
+              <input type="password" id="config-password" placeholder="Nueva contraseña">
+            </div>
+            <div class="form-group">
+              <label for="config-password-confirm">Confirmar Contraseña</label>
+              <input type="password" id="config-password-confirm" placeholder="Confirmar nueva contraseña">
+            </div>
+            <div class="form-group">
+              <label>Autenticación de Dos Factores</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="config-2fa">
+                <span>Activar</span>
+              </div>
+            </div>
+            <button class="action-button">Guardar Cambios</button>
+          </div>
+
+          <div class="config-section">
+            <div class="section-title">Idioma</div>
+            <div class="form-group">
+              <label for="config-language">Idioma de la Interfaz</label>
+              <select id="config-language">
+                <option value="es" selected>Español</option>
+                <option value="en">Inglés</option>
+                <option value="pt">Portugués</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right-section">
+        <div class="right-card">
+          <div class="section-title">Acciones Rápidas</div>
+          <div class="action-button" onclick="showSection('citas')">Nueva Cita</div>
+          <div class="action-button" style="margin-top: 10px;" onclick="showSection('inicio')">Últimos Registros</div>
+          <div class="action-button" style="margin-top: 10px;" onclick="generateAppointmentsPDF()">Citas Agendadas</div>
+        </div>
+        <div class="right-card">
+          <div class="section-title">Estadísticas</div>
+          <div class="info-row">
+            <span class="info-label">Pacientes Atendidos (Mes):</span>
+            <span class="info-value">45</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Citas Pendientes:</span>
+            <span class="info-value">8</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const appointments = [
+      { date: "2025-04-01", time: "08:00", patient: "Ana Gómez" },
+      { date: "2025-04-01", time: "09:30", patient: "Luis Rodríguez" },
+      { date: "2025-04-02", time: "10:00", patient: "María López" },
+      { date: "2025-04-02", time: "11:30", patient: "Carlos Fernández" },
+      { date: "2025-04-03", time: "08:30", patient: "Sofía Torres" },
+      { date: "2025-04-03", time: "09:00", patient: "Pedro Sánchez" },
+      { date: "2025-04-04", time: "10:30", patient: "Elena Martínez" },
+      { date: "2025-04-04", time: "12:00", patient: "Juan Pérez" },
+      { date: "2025-04-07", time: "08:00", patient: "Ana Gómez" },
+      { date: "2025-04-07", time: "09:00", patient: "María López" },
+      { date: "2025-04-08", time: "11:00", patient: "Luis Rodríguez" },
+      { date: "2025-04-09", time: "08:30", patient: "Carlos Fernández" },
+      { date: "2025-04-09", time: "10:00", patient: "Sofía Torres" },
+      { date: "2025-04-10", time: "09:30", patient: "Pedro Sánchez" },
+      { date: "2025-04-11", time: "08:00", patient: "Elena Martínez" },
+      { date: "2025-04-11", time: "12:30", patient: "Juan Pérez" },
+      { date: "2025-04-14", time: "08:30", patient: "Ana Gómez" },
+      { date: "2025-04-14", time: "10:00", patient: "María López" },
+      { date: "2025-04-15", time: "08:00", patient: "Sofía Torres" },
+      { date: "2025-04-15", time: "09:00", patient: "Carlos Fernández" },
+      { date: "2025-04-16", time: "11:00", patient: "Luis Rodríguez" },
+      { date: "2025-04-17", time: "08:30", patient: "Pedro Sánchez" },
+      { date: "2025-04-18", time: "10:00", patient: "María López" },
+      { date: "2025-04-18", time: "11:30", patient: "Elena Martínez" },
+      { date: "2025-04-21", time: "09:00", patient: "Juan Pérez" },
+      { date: "2025-04-22", time: "11:00", patient: "Luis Rodríguez" },
+      { date: "2025-04-23", time: "08:00", patient: "Ana Gómez" },
+      { date: "2025-04-24", time: "09:30", patient: "Carlos Fernández" },
+      { date: "2025-04-25", time: "08:30", patient: "Sofía Torres" },
+      { date: "2025-04-26", time: "09:00", patient: "Pedro Sánchez" },
+      { date: "2025-04-26", time: "10:00", patient: "Elena Martínez" },
+      { date: "2025-04-28", time: "08:00", patient: "Juan Pérez" },
+      { date: "2025-04-29", time: "10:30", patient: "María López" },
+      { date: "2025-04-30", time: "09:00", patient: "Luis Rodríguez" }
+    ];
+
+    const workingHours = {
+      weekdays: { start: 8, end: 14 },
+      saturday: { start: 8, end: 12 }
+    };
+
+    function showSection(section) {
+      const inicioSection = document.getElementById('inicio-section');
+      const pacientesSection = document.getElementById('pacientes-section');
+      const informacionLaboralSection = document.getElementById('informacion-laboral-section');
+      const citasSection = document.getElementById('citas-section');
+      const configuracionSection = document.getElementById('configuracion-section');
+
+      if (section === 'inicio') {
+        inicioSection.classList.remove('hidden');
+        pacientesSection.classList.add('hidden');
+        informacionLaboralSection.classList.add('hidden');
+        citasSection.classList.add('hidden');
+        configuracionSection.classList.add('hidden');
+      } else if (section === 'pacientes') {
+        inicioSection.classList.add('hidden');
+        pacientesSection.classList.remove('hidden');
+        informacionLaboralSection.classList.add('hidden');
+        citasSection.classList.add('hidden');
+        configuracionSection.classList.add('hidden');
+      } else if (section === 'informacion-laboral') {
+        inicioSection.classList.add('hidden');
+        pacientesSection.classList.add('hidden');
+        informacionLaboralSection.classList.remove('hidden');
+        citasSection.classList.add('hidden');
+        configuracionSection.classList.add('hidden');
+      } else if (section === 'citas') {
+        inicioSection.classList.add('hidden');
+        pacientesSection.classList.add('hidden');
+        informacionLaboralSection.classList.add('hidden');
+        citasSection.classList.remove('hidden');
+        configuracionSection.classList.add('hidden');
+        renderCalendar();
+      } else if (section === 'configuracion') {
+        inicioSection.classList.add('hidden');
+        pacientesSection.classList.add('hidden');
+        informacionLaboralSection.classList.add('hidden');
+        citasSection.classList.add('hidden');
+        configuracionSection.classList.remove('hidden');
+      }
+    }
+
+    function registerPatient() {
+      const name = document.getElementById('patient-name').value;
+      const age = document.getElementById('patient-age').value;
+      const sex = document.getElementById('patient-sex').value;
+      const dni = document.getElementById('patient-dni').value;
+      const contact = document.getElementById('patient-contact').value;
+
+      if (name && age && sex && dni && contact) {
+        const patientList = document.getElementById('patient-list-container');
+        const newPatientEntry = document.createElement('div');
+        newPatientEntry.className = 'patient-entry';
+        newPatientEntry.innerHTML = `
+          <div class="patient-info">
+            <div class="patient-name">${name}</div>
+            <div class="patient-detail">Edad: ${age} años</div>
+            <div class="patient-detail">Sexo: ${sex}</div>
+            <div class="patient-detail">DNI: ${dni}</div>
+            <div class="patient-detail">Teléfono: ${contact}</div>
+          </div>
+          <div>
+            <button class="whatsapp-button" onclick="window.location.href='watsap.html?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(contact)}'">Enviar al WhatsApp</button>
+            <button class="history-button" onclick="generateMedicalHistory('${name}', ${age}, '${sex}', '${dni}')">Historial Médico</button>
+          </div>
+        `;
+        
+        patientList.insertBefore(newPatientEntry, patientList.firstChild);
+        alert(`Paciente ${name} registrado exitosamente.`);
+
+        document.getElementById('patient-name').value = '';
+        document.getElementById('patient-age').value = '';
+        document.getElementById('patient-sex').value = '';
+        document.getElementById('patient-dni').value = '';
+        document.getElementById('patient-contact').value = '';
+      } else {
+        alert('Por favor, completa todos los campos.');
+      }
+    }
+
+    function generateMedicalHistory(name, age, sex, dni) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const currentYear = 2025;
+      const birthYear = currentYear - age;
+
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Historial Médico de ${name}`, 20, 20);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Edad: ${age} años`, 20, 30);
+      doc.text(`Sexo: ${sex}`, 20, 35);
+      doc.text(`DNI: ${dni}`, 20, 40);
+      doc.text(`Fecha de Nacimiento: ${birthYear}`, 20, 45);
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Historial Médico Desde el Nacimiento', 20, 60);
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      let yPos = 70;
+
+      if (name === 'Ana Gómez') {
+        doc.text(`${birthYear}: Nacimiento - Peso: 3.2 kg, sin complicaciones.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 1}: Vacunación completa (BCG, Hepatitis B).`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 5}: Infección de oído tratada con antibióticos.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 15}: Fractura de muñeca, inmovilización por 6 semanas.`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Infección respiratoria aguda, tratamiento con Amoxicilina.`, 20, yPos);
+      } else if (name === 'Luis Rodríguez') {
+        doc.text(`${birthYear}: Nacimiento - Cesárea, peso: 3.5 kg.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 2}: Vacunación DPT completada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 10}: Apendicitis, cirugía exitosa.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 40}: Diagnóstico de hipertensión, medicación iniciada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Sospecha de apendicitis recurrente, referido a cirugía.`, 20, yPos);
+      } else if (name === 'María López') {
+        doc.text(`${birthYear}: Nacimiento - Peso: 2.9 kg, ictericia leve tratada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 1}: Vacunación completa (Sarampión, Rubéola).`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 8}: Alergia a los frutos secos identificada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 20}: Embarazo, control prenatal iniciado.`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Control prenatal, todo normal.`, 20, yPos);
+      } else if (name === 'Carlos Fernández') {
+        doc.text(`${birthYear}: Nacimiento - Peso: 3.8 kg, sin complicaciones.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 3}: Vacunación contra polio completada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 30}: Diagnóstico de diabetes tipo 2, medicación iniciada.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 50}: Hipertensión diagnosticada, tratamiento con Losartán.`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Hipertensión no controlada, ajuste de dosis de Losartán.`, 20, yPos);
+      } else if (name === 'Sofía Torres') {
+        doc.text(`${birthYear}: Nacimiento - Peso: 3.0 kg, sin complicaciones.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 2}: Vacunación completa (Tétanos, Difteria).`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 15}: Anemia leve diagnosticada, suplementos de hierro.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 30}: Estrés crónico, recomendado terapia.`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Fatiga y mareos, anemia leve, suplemento de hierro recetado.`, 20, yPos);
+      } else {
+        doc.text(`${birthYear}: Nacimiento - Sin datos específicos disponibles.`, 20, yPos);
+        yPos += 10;
+        doc.text(`${birthYear + 1}: Vacunación inicial completada (estimada).`, 20, yPos);
+        yPos += 10;
+        doc.text(`2025: Registrado en el sistema, sin historial médico previo.`, 20, yPos);
+      }
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Generado por Dr. Eduardo Manuel - Hospital Nacional Arzobispo Loayza', 20, 280);
+
+      doc.save(`Historial_Medico_${name}.pdf`);
+    }
+
+    function generateAppointmentsPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFillColor(220, 38, 38);
+      doc.rect(0, 0, 210, 40, 'F');
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text('Resumen de Citas Agendadas', 20, 25);
+      doc.setFontSize(12);
+      doc.text('Dr. Eduardo Manuel - Hospital Nacional Arzobispo Loayza', 20, 35);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Médico: Dr. Eduardo Manuel Vargas', 20, 50);
+      doc.text('Especialidad: Medicina General', 20, 60);
+      doc.text('Período: Abril 2025', 20, 70);
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, 80, 170, 10, 'F');
+      doc.text('Fecha', 25, 87);
+      doc.text('Hora', 70, 87);
+      doc.text('Paciente', 110, 87);
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      let yPos = 95;
+      appointments.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+      
+      appointments.forEach((appt, index) => {
+        if (yPos > 260) {
+          doc.addPage();
+          yPos = 20;
+          doc.setFillColor(240, 240, 240);
+          doc.rect(20, yPos, 170, 10, 'F');
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Fecha', 25, yPos + 7);
+          doc.text('Hora', 70, yPos + 7);
+          doc.text('Paciente', 110, yPos + 7);
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'normal');
+          yPos += 15;
+        }
+
+        doc.setFillColor(...(index % 2 === 0 ? [250, 250, 250] : [255, 255, 255]));
+        doc.rect(20, yPos, 170, 10, 'F');
+        doc.text(appt.date, 25, yPos + 7);
+        doc.text(appt.time, 70, yPos + 7);
+        doc.text(appt.patient, 110, yPos + 7);
+        yPos += 10;
+      });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      doc.text('Generado el 28 de Abril de 2025', 20, 280);
+      doc.text('Sistema de Gestión Médica', 20, 285);
+
+      doc.save('Resumen_Citas_Abril_2025.pdf');
+    }
+
+    function renderCalendar() {
+      const calendarGrid = document.getElementById('calendar-grid');
+      calendarGrid.innerHTML = '';
+
+      const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+      });
+
+      const firstDayOfMonth = 2;
+      const daysInMonth = 30;
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day empty';
+        calendarGrid.appendChild(emptyDay);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        dayDiv.textContent = day;
+
+        const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
+        const hasAppointments = appointments.some(appt => appt.date === dateStr);
+        if (hasAppointments) {
+          dayDiv.classList.add('has-appointment');
+        }
+
+        dayDiv.addEventListener('click', () => showExpandedDay(day));
+        calendarGrid.appendChild(dayDiv);
+      }
+    }
+
+    function showExpandedDay(day) {
+      const expandedView = document.getElementById('expanded-day-view');
+      const calendarGrid = document.getElementById('calendar-grid');
+      calendarGrid.classList.add('hidden');
+      expandedView.classList.remove('hidden');
+
+      const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
+      const dayAppointments = appointments.filter(appt => appt.date === dateStr);
+
+      const firstDayOfMonth = 2;
+      const dayOfWeek = (firstDayOfMonth + (day - 1)) % 7;
+
+      let hours = [];
+      if (dayOfWeek === 6) {
+        for (let hour = workingHours.saturday.start; hour < workingHours.saturday.end; hour++) {
+          hours.push({ hour: hour, time: `${hour}:00` });
+          if (hour < workingHours.saturday.end - 1) {
+            hours.push({ hour: hour, time: `${hour}:30` });
+          }
+        }
+      } else if (dayOfWeek !== 0) {
+        for (let hour = workingHours.weekdays.start; hour < workingHours.weekdays.end; hour++) {
+          hours.push({ hour: hour, time: `${hour}:00` });
+          if (hour < workingHours.weekdays.end - 1) {
+            hours.push({ hour: hour, time: `${hour}:30` });
+          }
+        }
+      }
+
+      const slots = hours.map(slot => {
+        const appointment = dayAppointments.find(appt => appt.time === slot.time);
+        return {
+          time: slot.time,
+          patient: appointment ? appointment.patient : null,
+          status: appointment ? 'booked' : 'free'
+        };
+      });
+
+      expandedView.innerHTML = `
+        <div class="expanded-day-header">
+          <h3>Citas para el ${day} de Abril de 2025</h3>
+          <button class="action-button" onclick="resetCalendar()">Volver al Mes</button>
+        </div>
+        <div class="schedule">
+          ${slots.map(slot => `
+            <div class="appointment-slot ${slot.status}">
+              <span>${slot.time}</span>
+              <span>${slot.status === 'booked' ? slot.patient : 'Libre'}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      const freeSlots = slots.filter(slot => slot.status === 'free');
+      if (freeSlots.length > 0) {
+        const scheduleForm = document.createElement('div');
+        scheduleForm.className = 'schedule-form';
+        scheduleForm.innerHTML = `
+          <div class="section-title">Agendar Nueva Cita</div>
+          <div class="form-group">
+            <label for="schedule-patient">Paciente</label>
+            <select id="schedule-patient" required>
+              <option value="" disabled selected>Seleccione un paciente</option>
+              ${[...document.querySelectorAll('#patient-list-container .patient-name')].map(name => `
+                <option value="${name.textContent}">${name.textContent}</option>
+              `).join('')}
+              <option value="new">Nuevo Paciente</option>
+            </select>
+          </div>
+          <div class="form-group hidden" id="new-patient-name-group">
+            <label for="new-patient-name">Nombre del Nuevo Paciente</label>
+            <input type="text" id="new-patient-name" placeholder="Ej. Juan Pérez">
+          </div>
+          <div class="form-group">
+            <label for="schedule-time">Hora</label>
+            <select id="schedule-time" required>
+              ${freeSlots.map(slot => `
+                <option value="${slot.time}">${slot.time}</option>
+              `).join('')}
+            </select>
+            <input type="hidden" id="schedule-day" value="${day}">
+          </div>
+          <button class="action-button" onclick="scheduleAppointment()">Agendar Cita</button>
+        `;
+        expandedView.appendChild(scheduleForm);
+
+        document.getElementById('schedule-patient').addEventListener('change', function() {
+          const newPatientGroup = document.getElementById('new-patient-name-group');
+          if (this.value === 'new') {
+            newPatientGroup.classList.remove('hidden');
+          } else {
+            newPatientGroup.classList.add('hidden');
+          }
+        });
+      }
+    }
+
+    function resetCalendar() {
+      const expandedView = document.getElementById('expanded-day-view');
+      const calendarGrid = document.getElementById('calendar-grid');
+      expandedView.classList.add('hidden');
+      calendarGrid.classList.remove('hidden');
+      renderCalendar();
+    }
+
+    function scheduleAppointment() {
+      const patientSelect = document.getElementById('schedule-patient');
+      const newPatientNameInput = document.getElementById('new-patient-name');
+      const time = document.getElementById('schedule-time').value;
+      const day = document.getElementById('schedule-day').value;
+
+      let patient;
+      if (patientSelect.value === 'new') {
+        patient = newPatientNameInput.value;
+        if (!patient) {
+          alert('Por favor, ingrese el nombre del nuevo paciente.');
+          return;
+        }
+      } else {
+        patient = patientSelect.value;
+      }
+
+      if (!patient || !time) {
+        alert('Por favor, seleccione un paciente y una hora.');
+        return;
+      }
+
+      const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
+      appointments.push({ date: dateStr, time: time, patient: patient });
+      alert(`Cita agendada para ${patient} el ${day} de Abril a las ${time}.`);
+
+      showExpandedDay(parseInt(day));
+      renderCalendar();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      showsection('inicio');
+    });
+  </script>
+</body>
+</html>
