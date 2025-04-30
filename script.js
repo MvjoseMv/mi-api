@@ -9,10 +9,10 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         EducationLevel: parseFloat(document.getElementById('educationLevel').value) || 0,
         BMI: parseFloat(document.getElementById('bmi').value) || 0,
         Smoking: parseInt(document.getElementById('smoking').value) || 0,
-        AlcoholConsumption: parseInt(document.getElementById('alcoholConsumption').value) || 0,
-        PhysicalActivity: parseInt(document.getElementById('physicalActivity').value) || 0,
-        DietQuality: parseInt(document.getElementById('dietQuality').value) || 0,
-        SleepQuality: parseInt(document.getElementById('sleepQuality').value) || 0,
+        AlcoholConsumption: parseFloat(document.getElementById('alcoholConsumption').value) || 0,
+        PhysicalActivity: parseFloat(document.getElementById('physicalActivity').value) || 0,
+        DietQuality: parseFloat(document.getElementById('dietQuality').value) || 0,
+        SleepQuality: parseFloat(document.getElementById('sleepQuality').value) || 0,
         FamilyHistoryAlzheimers: parseInt(document.getElementById('familyHistoryAlzheimers').value) || 0,
         CardiovascularDisease: parseInt(document.getElementById('cardiovascularDisease').value) || 0,
         Diabetes: parseInt(document.getElementById('diabetes').value) || 0,
@@ -34,7 +34,7 @@ document.getElementById("prediccion-form").addEventListener("submit", function(e
         Disorientation: parseInt(document.getElementById('disorientation').value) || 0,
         PersonalityChanges: parseInt(document.getElementById('personalityChanges').value) || 0,
         DifficultyCompletingTasks: parseInt(document.getElementById('difficultyCompletingTasks').value) || 0,
-        Forgetfulness: parseInt(document.getElementById('forgetfulness').value) || 0
+        Forgetfulness: parseInt(document.getElementById('forgetfulness').value) || 0
     };
 
     // Depuración: Verifica los datos que estás enviando
