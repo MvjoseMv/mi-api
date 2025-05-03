@@ -20,8 +20,8 @@
         /* Custom styles for the circular progress */
         .progress-circle {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
             margin: 0 auto;
         }
         .progress-circle svg {
@@ -32,9 +32,16 @@
             stroke: #e5e7eb;
             stroke-width: 10;
         }
-        .progress-circle .circle-fg {
+        .progress-circle .circle-fg-alzheimer {
             fill: none;
             stroke: #dc2626;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        .progress-circle .circle-fg-no-alzheimer {
+            fill: none;
+            stroke: #22c55e;
             stroke-width: 10;
             stroke-linecap: round;
             transition: stroke-dasharray 0.5s ease;
@@ -44,9 +51,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: bold;
+        }
+        .progress-circle .percentage.alzheimer {
             color: #dc2626;
+        }
+        .progress-circle .percentage.no-alzheimer {
+            color: #22c55e;
         }
         /* Custom styles for the framed container */
         .framed-container {
@@ -123,18 +135,32 @@
                         </div>
                     </div>
                 </div>
-                <!-- Contenedor para centrar el título y porcentaje -->
+                <!-- Contenedor para centrar los círculos de predicción -->
                 <div class="flex-1 flex flex-col items-center">
                     <h2 class="text-2xl font-semibold text-gray-700 mb-6">Predicción de Alzheimer</h2>
-                    <div class="flex flex-col items-center">
-                        <div class="progress-circle">
-                            <svg width="200" height="200">
-                                <circle class="circle-bg" cx="100" cy="100" r="95"></circle>
-                                <circle class="circle-fg" cx="100" cy="100" r="95" stroke-dasharray="0 597" stroke-dashoffset="0"></circle>
-                            </svg>
-                            <div class="percentage" id="resultado">0%</div>
+                    <div class="flex space-x-8">
+                        <!-- Probabilidad de Alzheimer -->
+                        <div class="flex flex-col items-center">
+                            <div class="progress-circle">
+                                <svg width="150" height="150">
+                                    <circle class="circle-bg" cx="75" cy="75" r="70"></circle>
+                                    <circle class="circle-fg-alzheimer" cx="75" cy="75" r="70" stroke-dasharray="0 439" stroke-dashoffset="0"></circle>
+                                </svg>
+                                <div class="percentage alzheimer" id="resultado-alzheimer">0%</div>
+                            </div>
+                            <p class="text-gray-600 mt-4">Probabilidad de Alzheimer</p>
                         </div>
-                        <p class="text-gray-600 mt-4">Probabilidad calculada según el modelo</p>
+                        <!-- Probabilidad de No Tener Alzheimer -->
+                        <div class="flex flex-col items-center">
+                            <div class="progress-circle">
+                                <svg width="150" height="150">
+                                    <circle class="circle-bg" cx="75" cy="75" r="70"></circle>
+                                    <circle class="circle-fg-no-alzheimer" cx="75" cy="75" r="70" stroke-dasharray="0 439" stroke-dashoffset="0"></circle>
+                                </svg>
+                                <div class="percentage no-alzheimer" id="resultado-no-alzheimer">0%</div>
+                            </div>
+                            <p class="text-gray-600 mt-4">Probabilidad de No Tener Alzheimer</p>
+                        </div>
                     </div>
                 </div>
                 <!-- Contenedor para los enlaces y descripciones (derecha, dividido en dos columnas) -->
@@ -235,13 +261,12 @@
                 <div class="bg-white shadow-md rounded-lg p-6">
                     <h2 class="text-2xl font-semibold text-gray-700 mb-4">Recomendaciones de Hospitales</h2>
                     <ul class="list-disc list-inside text-gray-600 space-y-2">
-                            <li><strong>Hospital Nacional Arzobispo Loayza</strong> - A 3 km, especializado en atención de emergencias y medicina general.</li>
-                            <li><strong>Hospital Nacional Dos de Mayo</strong> - A 4 km, ofrece servicios de especialidades médicas complejas.</li>
-                            <li><strong>Hospital Nacional Edgardo Rebagliati Martins</strong> - A 6 km, centro de referencia en tratamientos especializados.</li>
-                            <li><strong>Clínica San Pablo Surco</strong> - A 7 km, atención privada en cardiología y neurología.</li>
-                            <li><strong>Clínica Internacional Lima</strong> - A 5 km, diagnóstico avanzado y cirugías especializadas.</li>
-                        </ul>
-                        
+                        <li><strong>Hospital Nacional Arzobispo Loayza</strong> - A 3 km, especializado en atención de emergencias y medicina general.</li>
+                        <li><strong>Hospital Nacional Dos de Mayo</strong> - A 4 km, ofrece servicios de especialidades médicas complejas.</li>
+                        <li><strong>Hospital Nacional Edgardo Rebagliati Martins</strong> - A 6 km, centro de referencia en tratamientos especializados.</li>
+                        <li><strong>Clínica San Pablo Surco</strong> - A 7 km, atención privada en cardiología y neurología.</li>
+                        <li><strong>Clínica Internacional Lima</strong> - A 5 km, diagnóstico avanzado y cirugías especializadas.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -253,17 +278,33 @@
     <!-- Script para mostrar la predicción -->
     <script>
         const porcentaje = localStorage.getItem('porcentajePrediccion') || 0;
-        const resultadoElement = document.getElementById('resultado');
-        const circleFg = document.querySelector('.circle-fg');
-        const circumference = 2 * Math.PI * 95;
+        const porcentajeNoAlzheimer = 100 - porcentaje;
 
-        resultadoElement.innerText = `${porcentaje}%`;
-        const dashArray = (porcentaje / 100) * circumference;
-        circleFg.style.strokeDasharray = `${dashArray} ${circumference}`;
+        // Probabilidad de Alzheimer
+        const resultadoAlzheimerElement = document.getElementById('resultado-alzheimer');
+        const circleFgAlzheimer = document.querySelector('.circle-fg-alzheimer');
+        const circumference = 2 * Math.PI * 70;
+
+        resultadoAlzheimerElement.innerText = `${porcentaje}%`;
+        const dashArrayAlzheimer = (porcentaje / 100) * circumference;
+        circleFgAlzheimer.style.strokeDasharray = `${dashArrayAlzheimer} ${circumference}`;
 
         if (porcentaje === 0) {
-            resultadoElement.innerText = 'No se encontró resultado de predicción.';
-            circleFg.style.strokeDasharray = `0 ${circumference}`;
+            resultadoAlzheimerElement.innerText = 'No disponible';
+            circleFgAlzheimer.style.strokeDasharray = `0 ${circumference}`;
+        }
+
+        // Probabilidad de No Tener Alzheimer
+        const resultadoNoAlzheimerElement = document.getElementById('resultado-no-alzheimer');
+        const circleFgNoAlzheimer = document.querySelector('.circle-fg-no-alzheimer');
+
+        resultadoNoAlzheimerElement.innerText = `${porcentajeNoAlzheimer}%`;
+        const dashArrayNoAlzheimer = (porcentajeNoAlzheimer / 100) * circumference;
+        circleFgNoAlzheimer.style.strokeDasharray = `${dashArrayNoAlzheimer} ${circumference}`;
+
+        if (porcentaje === 0) {
+            resultadoNoAlzheimerElement.innerText = 'No disponible';
+            circleFgNoAlzheimer.style.strokeDasharray = `0 ${circumference}`;
         }
     </script>
 
@@ -291,7 +332,10 @@
             yPosition += 7;
             doc.setFontSize(12);
             const porcentaje = localStorage.getItem('porcentajePrediccion') || 'No disponible';
+            const porcentajeNoAlzheimer = porcentaje === 'No disponible' ? 'No disponible' : `${100 - porcentaje}%`;
             doc.text(`Probabilidad de Alzheimer: ${porcentaje}%`, margin, yPosition);
+            yPosition += 7;
+            doc.text(`Probabilidad de No Tener Alzheimer: ${porcentajeNoAlzheimer}`, margin, yPosition);
             yPosition += 10;
 
             // Línea separadora
