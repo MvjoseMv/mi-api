@@ -24,24 +24,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Modelo de entrada
+# Modelo de entrada ajustado (todos como float para evitar errores con decimales)
 class DatosEntrada(BaseModel):
     Age: float
-    Gender: int
-    Ethnicity: int
+    Gender: float
+    Ethnicity: float
     EducationLevel: float
     BMI: float
-    Smoking: int
-    AlcoholConsumption: int
-    PhysicalActivity: int
-    DietQuality: int
-    SleepQuality: int
-    FamilyHistoryAlzheimers: int
-    CardiovascularDisease: int
-    Diabetes: int
-    Depression: int
-    HeadInjury: int
-    Hypertension: int
+    Smoking: float
+    AlcoholConsumption: float
+    PhysicalActivity: float
+    DietQuality: float
+    SleepQuality: float
+    FamilyHistoryAlzheimers: float
+    CardiovascularDisease: float
+    Diabetes: float
+    Depression: float
+    HeadInjury: float
+    Hypertension: float
     SystolicBP: float
     DiastolicBP: float
     CholesterolTotal: float
@@ -49,19 +49,19 @@ class DatosEntrada(BaseModel):
     CholesterolHDL: float
     CholesterolTriglycerides: float
     MMSE: float
-    FunctionalAssessment: int
-    MemoryComplaints: int
-    BehavioralProblems: int
-    ADL: int
-    Confusion: int
-    Disorientation: int
-    PersonalityChanges: int
-    DifficultyCompletingTasks: int
-    Forgetfulness: int
+    FunctionalAssessment: float
+    MemoryComplaints: float
+    BehavioralProblems: float
+    ADL: float
+    Confusion: float
+    Disorientation: float
+    PersonalityChanges: float
+    DifficultyCompletingTasks: float
+    Forgetfulness: float
 
 @app.post("/predecir")
 async def predecir(datos: DatosEntrada):
-    entrada = np.array([[
+    entrada = np.array([[  # Creamos un array 2D con los datos
         datos.Age,
         datos.Gender,
         datos.Ethnicity,
@@ -95,10 +95,12 @@ async def predecir(datos: DatosEntrada):
         datos.DifficultyCompletingTasks,
         datos.Forgetfulness
     ]])
+    # Realiza la predicción
     probabilidad = modelo.predict_proba(entrada)[0][1] * 100
     return {"probabilidad_alzheimer": round(probabilidad, 2)}
 
 # 👇 Esta parte es importante para Railway
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Lee el puerto que da Railway
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_modelo:app", host="0.0.0.0", port=port)
+    
