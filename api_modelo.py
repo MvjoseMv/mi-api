@@ -5,6 +5,7 @@ import joblib
 import numpy as np
 import os
 import uvicorn
+import pandas as pd  # ✅ NUEVO: para guardar datos en CSV
 
 # Carga el modelo
 modelo = joblib.load('modelo_alzheimer.pkl')
@@ -95,6 +96,11 @@ async def predecir(datos: DatosEntrada):
         datos.DifficultyCompletingTasks,
         datos.Forgetfulness
     ]])
+
+    # ✅ NUEVO: Guardar los datos en un archivo CSV
+    df = pd.DataFrame(entrada, columns=datos.__annotations__.keys())
+    df.to_csv("registro_usuarios.csv", mode='a', header=not os.path.exists("registro_usuarios.csv"), index=False)
+
     # Realiza la predicción
     probabilidad = modelo.predict_proba(entrada)[0][1] * 100
     return {"probabilidad_alzheimer": round(probabilidad, 2)}
@@ -103,4 +109,3 @@ async def predecir(datos: DatosEntrada):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_modelo:app", host="0.0.0.0", port=port)
-    
