@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import joblib
 import numpy as np
@@ -7,11 +8,12 @@ import os
 import uvicorn
 import pandas as pd
 
-# Carga el modelo
+# Cargar el modelo
 modelo = joblib.load('modelo_alzheimer.pkl')
 
 app = FastAPI()
 
+# Endpoint raíz
 @app.get("/")
 async def root():
     return {"mensaje": "API de predicción de Alzheimer activa"}
@@ -25,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Modelo de entrada ajustado
+# Modelo de entrada
 class DatosEntrada(BaseModel):
     Age: float
     Gender: float
@@ -60,9 +62,10 @@ class DatosEntrada(BaseModel):
     DifficultyCompletingTasks: float
     Forgetfulness: float
 
+# Endpoint de predicción
 @app.post("/predecir")
 async def predecir(datos: DatosEntrada):
-    entrada = np.array([[  # Creamos un array 2D con los datos
+    entrada = np.array([[  # Convertir datos a array 2D
         datos.Age,
         datos.Gender,
         datos.Ethnicity,
@@ -97,10 +100,8 @@ async def predecir(datos: DatosEntrada):
         datos.Forgetfulness
     ]])
 
-    # Crear DataFrame con los datos
-    df = pd.DataFrame(entrada, columns=datos.__annotations__.keys())
-
     # Guardar en Excel
+    df = pd.DataFrame(entrada, columns=datos.__annotations__.keys())
     archivo_excel = "registro_usuarios.xlsx"
     if os.path.exists(archivo_excel):
         df_existente = pd.read_excel(archivo_excel)
@@ -109,11 +110,20 @@ async def predecir(datos: DatosEntrada):
         df_nuevo = df
     df_nuevo.to_excel(archivo_excel, index=False)
 
-    # Realizar predicción
+    # Predicción
     probabilidad = modelo.predict_proba(entrada)[0][1] * 100
     return {"probabilidad_alzheimer": round(probabilidad, 2)}
 
-# 👇 Para ejecutar con Railway u otro entorno
+# 🆕 Endpoint para descargar el Excel
+@app.get("/descargar_excel")
+async def descargar_excel():
+    archivo = "registro_usuarios.xlsx"
+    if os.path.exists(archivo):
+        return FileResponse(archivo, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=archivo)
+    else:
+        return {"error": "El archivo no existe"}
+
+# Ejecutar localmente o en Railway
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_modelo:app", host="0.0.0.0", port=port)
