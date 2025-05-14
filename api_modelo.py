@@ -10,6 +10,7 @@ from io import BytesIO
 import openpyxl
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+import pandas as pd
 
 # Cargar el modelo
 modelo = joblib.load('modelo_alzheimer.pkl')
@@ -106,20 +107,45 @@ async def root():
 # Endpoint de predicción
 @app.post("/predecir")
 async def predecir(datos: DatosEntrada):
-    entrada = np.array([[  # Convertir datos a array 2D
-        datos.Age, datos.Gender, datos.Ethnicity, datos.EducationLevel, datos.BMI, datos.Smoking,
-        datos.AlcoholConsumption, datos.PhysicalActivity, datos.DietQuality, datos.SleepQuality,
-        datos.FamilyHistoryAlzheimers, datos.CardiovascularDisease, datos.Diabetes, datos.Depression,
-        datos.HeadInjury, datos.Hypertension, datos.SystolicBP, datos.DiastolicBP, datos.CholesterolTotal,
-        datos.CholesterolLDL, datos.CholesterolHDL, datos.CholesterolTriglycerides, datos.MMSE,
-        datos.FunctionalAssessment, datos.MemoryComplaints, datos.BehavioralProblems, datos.ADL,
-        datos.Confusion, datos.Disorientation, datos.PersonalityChanges, datos.DifficultyCompletingTasks,
-        datos.Forgetfulness
-    ]])
+    # Convertir los datos a un DataFrame para asegurar la consistencia con el modelo
+    df = pd.DataFrame([{
+        'Age': datos.Age,
+        'Gender': datos.Gender,
+        'Ethnicity': datos.Ethnicity,
+        'EducationLevel': datos.EducationLevel,
+        'BMI': datos.BMI,
+        'Smoking': datos.Smoking,
+        'AlcoholConsumption': datos.AlcoholConsumption,
+        'PhysicalActivity': datos.PhysicalActivity,
+        'DietQuality': datos.DietQuality,
+        'SleepQuality': datos.SleepQuality,
+        'FamilyHistoryAlzheimers': datos.FamilyHistoryAlzheimers,
+        'CardiovascularDisease': datos.CardiovascularDisease,
+        'Diabetes': datos.Diabetes,
+        'Depression': datos.Depression,
+        'HeadInjury': datos.HeadInjury,
+        'Hypertension': datos.Hypertension,
+        'SystolicBP': datos.SystolicBP,
+        'DiastolicBP': datos.DiastolicBP,
+        'CholesterolTotal': datos.CholesterolTotal,
+        'CholesterolLDL': datos.CholesterolLDL,
+        'CholesterolHDL': datos.CholesterolHDL,
+        'CholesterolTriglycerides': datos.CholesterolTriglycerides,
+        'MMSE': datos.MMSE,
+        'FunctionalAssessment': datos.FunctionalAssessment,
+        'MemoryComplaints': datos.MemoryComplaints,
+        'BehavioralProblems': datos.BehavioralProblems,
+        'ADL': datos.ADL,
+        'Confusion': datos.Confusion,
+        'Disorientation': datos.Disorientation,
+        'PersonalityChanges': datos.PersonalityChanges,
+        'DifficultyCompletingTasks': datos.DifficultyCompletingTasks,
+        'Forgetfulness': datos.Forgetfulness
+    }])
 
     agregar_datos_a_sheet(datos)  # Llamamos la función para agregar los datos a Google Sheets
 
-    probabilidad = modelo.predict_proba(entrada)[0][1] * 100  # Predicción
+    probabilidad = modelo.predict_proba(df)[0][1] * 100  # Predicción usando DataFrame
     return {"probabilidad_alzheimer": round(probabilidad, 2)}
 
 # Endpoint para descargar Excel desde Google Sheets

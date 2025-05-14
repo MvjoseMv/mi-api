@@ -135,31 +135,20 @@
                         </div>
                     </div>
                 </div>
-                <!-- Contenedor para centrar los círculos de predicción -->
+                <!-- Contenedor para centrar el círculo de predicción -->
                 <div class="flex-1 flex flex-col items-center">
                     <h2 class="text-2xl font-semibold text-gray-700 mb-6">Predicción de Alzheimer</h2>
-                    <div class="flex space-x-8">
-                        <!-- Probabilidad de Alzheimer -->
+                    <div class="flex justify-center">
+                        <!-- Círculo de predicción dinámico -->
                         <div class="flex flex-col items-center">
                             <div class="progress-circle">
                                 <svg width="150" height="150">
                                     <circle class="circle-bg" cx="75" cy="75" r="70"></circle>
-                                    <circle class="circle-fg-alzheimer" cx="75" cy="75" r="70" stroke-dasharray="0 439" stroke-dashoffset="0"></circle>
+                                    <circle id="circle-fg" cx="75" cy="75" r="70" stroke-dasharray="0 439" stroke-dashoffset="0"></circle>
                                 </svg>
-                                <div class="percentage alzheimer" id="resultado-alzheimer">0%</div>
+                                <div class="percentage" id="resultado-prediccion">0%</div>
                             </div>
-                            <p class="text-gray-600 mt-4">Probabilidad de Alzheimer</p>
-                        </div>
-                        <!-- Probabilidad de No Tener Alzheimer -->
-                        <div class="flex flex-col items-center">
-                            <div class="progress-circle">
-                                <svg width="150" height="150">
-                                    <circle class="circle-bg" cx="75" cy="75" r="70"></circle>
-                                    <circle class="circle-fg-no-alzheimer" cx="75" cy="75" r="70" stroke-dasharray="0 439" stroke-dashoffset="0"></circle>
-                                </svg>
-                                <div class="percentage no-alzheimer" id="resultado-no-alzheimer">0%</div>
-                            </div>
-                            <p class="text-gray-600 mt-4">Probabilidad de No Tener Alzheimer</p>
+                            <p class="text-gray-600 mt-4" id="prediccion-titulo">Probabilidad de Alzheimer</p>
                         </div>
                     </div>
                 </div>
@@ -167,7 +156,7 @@
                 <div class="flex w-[280px] h-[200px] mr-0 mt-0 ml-4">
                     <!-- Columna izquierda (3 enlaces) -->
                     <div class="flex flex-col items-start w-1/2 pr-2">
-                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm flex items-center w-full">
+                        <a href="#" class="prediction-link bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition duration-200 mb-1 text-sm fless
                             <i class="fas fa-tint mr-2"></i> Diabetes
                         </a>
                         <p class="text-sm text-gray-500 text-left mb-3">Predicción de riesgo de diabetes.</p>
@@ -200,7 +189,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Izquierda: Estadísticas y Mapa -->
+            <!-- Izquierda: Estadísticas, Mapa y Recomendaciones del Doctor -->
             <div>
                 <!-- Estadísticas -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
@@ -235,13 +224,25 @@
                 </div>
 
                 <!-- Mapa Interactivo -->
-                <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="bg-white shadow-md rounded-lg p-6 mb-8">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Hospitales Cercanos</h3>
                     <div id="map" class="h-64 w-full rounded-lg"></div>
                 </div>
+
+                <!-- Recomendaciones del Doctor -->
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Recomendaciones del Doctor</h2>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Consulta con un médico especialista para confirmar el riesgo.</li>
+                        <li>Realiza chequeos periódicos para monitorear tu salud.</li>
+                        <li>Adopta un estilo de vida saludable con dieta balanceada y ejercicio.</li>
+                        <li>Evita factores de riesgo como el estrés y el consumo de alcohol.</li>
+                        <li>Mantén un seguimiento con VisionSana para actualizaciones.</li>
+                    </ul>
+                </div>
             </div>
 
-            <!-- Derecha: Gráficos y Recomendaciones -->
+            <!-- Derecha: Gráficos y Recomendaciones de Hospitales -->
             <div>
                 <!-- Gráficos -->
                 <div class="grid grid-cols-1 gap-6 mb-8">
@@ -277,34 +278,34 @@
 
     <!-- Script para mostrar la predicción -->
     <script>
-        const porcentaje = localStorage.getItem('porcentajePrediccion') || 0;
-        const porcentajeNoAlzheimer = 100 - porcentaje;
-
-        // Probabilidad de Alzheimer
-        const resultadoAlzheimerElement = document.getElementById('resultado-alzheimer');
-        const circleFgAlzheimer = document.querySelector('.circle-fg-alzheimer');
+        const porcentajeAlzheimer = parseFloat(localStorage.getItem('porcentajePrediccion')) || 0;
+        const resultadoPrediccionElement = document.getElementById('resultado-prediccion');
+        const circleFg = document.getElementById('circle-fg');
+        const prediccionTitulo = document.getElementById('prediccion-titulo');
         const circumference = 2 * Math.PI * 70;
 
-        resultadoAlzheimerElement.innerText = `${porcentaje}%`;
-        const dashArrayAlzheimer = (porcentaje / 100) * circumference;
-        circleFgAlzheimer.style.strokeDasharray = `${dashArrayAlzheimer} ${circumference}`;
-
-        if (porcentaje === 0) {
-            resultadoAlzheimerElement.innerText = 'No disponible';
-            circleFgAlzheimer.style.strokeDasharray = `0 ${circumference}`;
+        if (porcentajeAlzheimer >= 40) {
+            // Mostrar probabilidad de Alzheimer (círculo rojo)
+            resultadoPrediccionElement.innerText = `${porcentajeAlzheimer}%`;
+            resultadoPrediccionElement.classList.add('alzheimer');
+            circleFg.classList.add('circle-fg-alzheimer');
+            prediccionTitulo.innerText = 'Probabilidad de Alzheimer';
+            const dashArray = (porcentajeAlzheimer / 100) * circumference;
+            circleFg.style.strokeDasharray = `${dashArray} ${circumference}`;
+        } else {
+            // Mostrar probabilidad de NO tener Alzheimer (círculo verde)
+            const porcentajeNoAlzheimer = 100 - porcentajeAlzheimer;
+            resultadoPrediccionElement.innerText = `${porcentajeNoAlzheimer}%`;
+            resultadoPrediccionElement.classList.add('no-alzheimer');
+            circleFg.classList.add('circle-fg-no-alzheimer');
+            prediccionTitulo.innerText = 'Probabilidad de No Tener Alzheimer';
+            const dashArray = (porcentajeNoAlzheimer / 100) * circumference;
+            circleFg.style.strokeDasharray = `${dashArray} ${circumference}`;
         }
 
-        // Probabilidad de No Tener Alzheimer
-        const resultadoNoAlzheimerElement = document.getElementById('resultado-no-alzheimer');
-        const circleFgNoAlzheimer = document.querySelector('.circle-fg-no-alzheimer');
-
-        resultadoNoAlzheimerElement.innerText = `${porcentajeNoAlzheimer}%`;
-        const dashArrayNoAlzheimer = (porcentajeNoAlzheimer / 100) * circumference;
-        circleFgNoAlzheimer.style.strokeDasharray = `${dashArrayNoAlzheimer} ${circumference}`;
-
-        if (porcentaje === 0) {
-            resultadoNoAlzheimerElement.innerText = 'No disponible';
-            circleFgNoAlzheimer.style.strokeDasharray = `0 ${circumference}`;
+        if (porcentajeAlzheimer === 0) {
+            resultadoPrediccionElement.innerText = 'No disponible';
+            circleFg.style.strokeDasharray = `0 ${circumference}`;
         }
     </script>
 
@@ -331,11 +332,13 @@
             doc.text('Resultado de la Predicción', margin, yPosition);
             yPosition += 7;
             doc.setFontSize(12);
-            const porcentaje = localStorage.getItem('porcentajePrediccion') || 'No disponible';
-            const porcentajeNoAlzheimer = porcentaje === 'No disponible' ? 'No disponible' : `${100 - porcentaje}%`;
-            doc.text(`Probabilidad de Alzheimer: ${porcentaje}%`, margin, yPosition);
-            yPosition += 7;
-            doc.text(`Probabilidad de No Tener Alzheimer: ${porcentajeNoAlzheimer}`, margin, yPosition);
+            const porcentajeAlzheimer = parseFloat(localStorage.getItem('porcentajePrediccion')) || 0;
+            if (porcentajeAlzheimer >= 40) {
+                doc.text(`Probabilidad de Alzheimer: ${porcentajeAlzheimer}%`, margin, yPosition);
+            } else {
+                const porcentajeNoAlzheimer = 100 - porcentajeAlzheimer;
+                doc.text(`Probabilidad de No Tener Alzheimer: ${porcentajeNoAlzheimer}%`, margin, yPosition);
+            }
             yPosition += 10;
 
             // Línea separadora
