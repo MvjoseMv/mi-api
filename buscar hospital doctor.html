@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Hospitales y Clínicas en Perú</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8ece9, #e9d8d5);
+            color: #333333;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+            border: 3px solid #800000;
+            border-radius: 12px;
+            background-color: #FFFFFF;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        .hospital-list-container {
+            max-height: 500px;
+            overflow-y: auto;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards 0.3s;
+        }
+        .hospital-list-item {
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hospital-list-item:hover {
+            transform: translateY(-3px);
+            background-color: #f9e6e3;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #800000;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .leaflet-control-attribution {
+            display: none !important;
+        }
+        .department-tooltip, .district-tooltip {
+            background: #ffffff;
+            border: 2px solid #800000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #800000;
+            white-space: nowrap;
+        }
+        .district-group {
+            margin-bottom: 1.5rem;
+        }
+        .district-title {
+            font-weight: 600;
+            color: #800000;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #800000;
+            padding-bottom: 0.25rem;
+        }
+        .back-button {
+            background-color: #800000;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 600;
+        }
+        .back-button:hover {
+            background-color: #a30000;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .department-layer:hover {
+            fill-opacity: 0.9 !important;
+            transition: fill-opacity 0.3s ease;
+        }
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #800000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            z-index: 1000;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        header, footer {
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-white text-[#800000] py-6 shadow-lg sticky top-0 z-20">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-hospital text-4xl mr-4" style="color: #800000;"></i>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Buscador de Hospitales y Clínicas en Perú</h1>
+                    <p class="text-sm md:text-base">Encuentra hospitales y clínicas para verificar disponibilidad de especialistas</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <section class="flex flex-col lg:flex-row gap-8 relative">
+            <!-- Mapa Interactivo del Perú (Izquierda) -->
+            <div class="lg:w-1/2 relative">
+                <h2 class="text-xl font-bold text-[#800000] mb-4 text-center">Mapa Interactivo del Perú</h2>
+                <div id="map" class="relative">
+                    <div id="loadingSpinner" class="loading-spinner"></div>
+                </div>
+                <div class="legend-container">
+                    <p class="text-sm text-[#800000] mr-4">Instrucciones: Haz clic en un departamento para verlo de cerca y sus distritos.</p>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #800000;"></span>
+                        <span class="text-sm font-medium">Sin hospitales registrados</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #c40000;"></span>
+                        <span class="text-sm font-medium">Con hospitales registrados</span>
+                    </div>
+                </div>
+                <div id="backButtonContainer" style="display: none;">
+                    <button class="back-button" onclick="resetMapView()">Volver al mapa nacional</button>
+                </div>
+            </div>
+
+            <!-- Búsqueda y Lista (Derecha) -->
+            <div class="lg:w-1/2">
+                <div class="mb-6">
+                    <input type="text" id="searchBar" class="p-3 w-full rounded-lg border border-[#800000] text-[#800000] focus:outline-none focus:ring-2 focus:ring-[#800000] transition-all duration-300" placeholder="Buscar hospital o clínica..." aria-label="Buscar hospital o clínica">
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-[#800000] mb-6">Lista de Hospitales y Clínicas</h2>
+                <div id="hospitalList" class="hospital-list-container grid grid-cols-1 gap-4"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#800000] text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg font-semibold">Buscador de Salud Perú</p>
+            <p class="mt-4">© 2025 Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de hospitales y clínicas con enlaces a sus sitios web, incluyendo distrito
+        const hospitals = [
+            // Lima
+            { name: "Hospital Nacional Arzobispo Loayza", lat: -12.056, lng: -77.045, website: "interconsultadoctor.html", region: "Lima", district: "Cercado de Lima" },
+            { name: "Hospital Nacional Sergio E. Bernales", lat: -12.042, lng: -77.089, website: "https://www.essalud.gob.pe", region: "Lima", district: "Comas" },
+            { name: "Clínica Ricardo Palma", lat: -12.103, lng: -77.025, website: "https://www.crp.com.pe", region: "Lima", district: "San Isidro" },
+            { name: "Clínica San Pablo", lat: -12.069, lng: -77.063, website: "https://www.sanpablo.com.pe", region: "Lima", district: "Santiago de Surco" },
+            { name: "Clínica Delgado", lat: -12.089, lng: -77.057, website: "https://www.clinicadelgado.pe", region: "Lima", district: "Miraflores" },
+            { name: "Clínica Cayetano Heredia", lat: -12.017, lng: -77.053, website: "https://www.cmch.pe", region: "Lima", district: "San Martín de Porres" },
+            { name: "Clínica Stella Maris", lat: -12.094, lng: -77.046, website: "https://www.stellamaris.com.pe", region: "Lima", district: "San Miguel" },
+            { name: "Clínica San Juan de Dios", lat: -12.081, lng: -77.013, website: "https://clinicalima.sanjuandedios.pe", region: "Lima", district: "San Luis" },
+            // Ayacucho
+            { name: "Hospital Regional de Ayacucho", lat: -13.158, lng: -74.223, website: "https://www.gob.pe/institucion/hrayacucho/institucional", region: "Ayacucho", district: "Huamanga" },
+            // Amazonas
+            { name: "Hospital Regional de Amazonas", lat: -6.231, lng: -77.869, website: "https://www.gob.pe/institucion/regionamazonas/institucional", region: "Amazonas", district: "Chachapoyas" },
+            // Áncash
+            { name: "Hospital Víctor Ramos Guardia", lat: -9.529, lng: -77.529, website: "https://www.hospitalhuaraz.gob.pe", region: "Ancash", district: "Huaraz" },
+            // Apurímac
+            { name: "Hospital Guillermo Díaz de la Vega", lat: -13.634, lng: -72.881, website: "https://www.diresaapurimac.gob.pe", region: "Apurimac", district: "Abancay" },
+            // Arequipa
+            { name: "Hospital Goyeneche", lat: -16.399, lng: -71.536, website: "https://www.hgoyeneche.gob.pe", region: "Arequipa", district: "Cercado" },
+            { name: "Clínica Arequipa", lat: -16.394, lng: -71.541, website: "https://www.clinicaarequipa.com.pe", region: "Arequipa", district: "Yanahuara" },
+            // Cajamarca
+            { name: "Hospital Regional de Cajamarca", lat: -7.157, lng: -78.518, website: "https://www.regioncajamarca.gob.pe", region: "Cajamarca", district: "Cajamarca" },
+            // Callao
+            { name: "Hospital Nacional Daniel Alcides Carrión", lat: -12.057, lng: -77.147, website: "https://www.hndac.gob.pe", region: "Callao", district: "Callao" },
+            // Cusco
+            { name: "Hospital Regional del Cusco", lat: -13.522, lng: -71.967, website: "https://www.hrcusco.gob.pe", region: "Cusco", district: "Cusco" },
+            { name: "Clínica Pardo", lat: -13.518, lng: -71.978, website: "https://www.clinicapardo.com.pe", region: "Cusco", district: "Santiago" },
+            // Huancavelica
+            { name: "Hospital Departamental de Huancavelica", lat: -12.786, lng: -74.976, website: "https://www.diresahuancavelica.gob.pe", region: "Huancavelica", district: "Huancavelica" },
+            // Huánuco
+            { name: "Hospital Hermilio Valdizán", lat: -9.929, lng: -76.239, website: "https://www.hospitalvaldizan.gob.pe", region: "Huanuco", district: "Huánuco" },
+            // Ica
+            { name: "Hospital Regional de Ica", lat: -14.068, lng: -75.728, website: "https://www.hospitalregionaldeica.gob.pe", region: "Ica", district: "Ica" },
+            // Junín
+            { name: "Hospital Daniel Alcides Carrión - Huancayo", lat: -12.068, lng: -75.210, website: "https://www.hospitalcarrion.gob.pe", region: "Junin", district: "Huancayo" },
+            // La Libertad
+            { name: "Hospital Regional Docente de Trujillo", lat: -8.112, lng: -79.029, website: "https://www.hospitalregionaltrujillo.gob.pe", region: "La Libertad", district: "Trujillo" },
+            { name: "Clínica San Pablo - Trujillo", lat: -8.109, lng: -79.032, website: "https://www.sanpablo.com.pe", region: "La Libertad", district: "Trujillo" },
+            // Lambayeque
+            { name: "Hospital Regional Lambayeque", lat: -6.701, lng: -79.906, website: "https://www.hospitallambayeque.gob.pe", region: "Lambayeque", district: "Chiclayo" },
+            // Loreto
+            { name: "Hospital Regional de Loreto", lat: -3.749, lng: -73.253, website: "https://www.diresaloreto.gob.pe", region: "Loreto", district: "Iquitos" },
+            // Madre de Dios
+            { name: "Hospital Santa Rosa de Puerto Maldonado", lat: -12.593, lng: -69.196, website: "https://www.diresamadrededios.gob.pe", region: "Madre de Dios", district: "Tambopata" },
+            // Moquegua
+            { name: "Hospital Regional de Moquegua", lat: -17.194, lng: -70.935, website: "https://www.hospitalmoquegua.gob.pe", region: "Moquegua", district: "Moquegua" },
+            // Pasco
+            { name: "Hospital Daniel Alcides Carrión - Pasco", lat: -10.684, lng: -76.262, website: "https://www.diresapasco.gob.pe", region: "Pasco", district: "Cerro de Pasco" },
+            // Piura
+            { name: "Hospital Jorge Reátegui Delgado", lat: -5.194, lng: -80.623, website: "https://www.hospitalpiura.gob.pe", region: "Piura", district: "Piura" },
+            // Puno
+            { name: "Hospital Regional Manuel Núñez Butrón", lat: -15.842, lng: -70.021, website: "https://www.hospitalpuno.gob.pe", region: "Puno", district: "Puno" },
+            // San Martín
+            { name: "Hospital II-2 Tarapoto", lat: -6.487, lng: -76.366, website: "https://www.diresasanmartin.gob.pe", region: "San Martin", district: "Tarapoto" },
+            // Tacna
+            { name: "Hospital Hipólito Unanue", lat: -18.014, lng: -70.253, website: "https://www.hospitalunanue.gob.pe", region: "Tacna", district: "Tacna" },
+            // Tumbes
+            { name: "Hospital Regional de Tumbes", lat: -3.571, lng: -80.459, website: "https://www.diresatumbes.gob.pe", region: "Tumbes", district: "Tumbes" },
+            // Ucayali
+            { name: "Hospital Regional de Ucayali", lat: -8.379, lng: -74.553, website: "https://www.diresaucayali.gob.pe", region: "Ucayali", district: "Pucallpa" }
+        ];
+
+        // Calcular cantidad de hospitales por región
+        const hospitalCounts = hospitals.reduce((acc, hospital) => {
+            const region = hospital.region.toLowerCase();
+            acc[region] = (acc[region] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Inicializar el mapa con Leaflet
+        const map = L.map('map', {
+            zoomControl: true,
+            dragging: true,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: true,
+            touchZoom: false,
+            attributionControl: false,
+            fadeAnimation: true,
+            zoomAnimation: true
+        }).setView([-10.5, -74.5], 3.8);
+
+        map.getPanes().mapPane.style.backgroundColor = 'white';
+
+        let departmentLayer, districtLayer, selectedRegion = null;
+        const nationalView = { center: [-10.5, -74.5], zoom: 3.8 };
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Mostrar spinner mientras se carga el mapa
+        function showLoadingSpinner() {
+            loadingSpinner.style.display = 'block';
+        }
+
+        function hideLoadingSpinner() {
+            loadingSpinner.style.display = 'none';
+        }
+
+        // Cargar departamentos
+        showLoadingSpinner();
+        fetch('https://raw.githubusercontent.com/juaneladio/peru-geojson/master/peru_departamental_simple.geojson')
+            .then(response => response.json())
+            .then(data => {
+                const bounds = L.geoJSON(data).getBounds();
+                const paddingY = (bounds.getNorth() - bounds.getSouth()) * 0;
+                const paddingX = (bounds.getEast() - bounds.getWest()) * 0;
+
+                departmentLayer = L.geoJSON(data, {
+                    style: function(feature) {
+                        const department = feature.properties.NOMBDEP.toLowerCase();
+                        const count = hospitalCounts[department] || 0;
+                        return {
+                            fillColor: count > 0 ? '#c40000' : '#800000',
+                            weight: 1,
+                            opacity: 1,
+                            color: '#800000',
+                            fillOpacity: 0.7,
+                            className: 'department-layer'
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const department = feature.properties.NOMBDEP;
+                        const count = hospitalCounts[department.toLowerCase()] || 0;
+                        layer.bindTooltip(
+                            `${department}: ${count} hospital(es)`,
+                            {
+                                permanent: false,
+                                direction: 'top',
+                                className: 'department-tooltip'
+                            }
+                        );
+
+                        layer.on('click', function() {
+                            const regionName = department;
+                            selectedRegion = regionName;
+                            zoomToDepartment(feature, regionName);
+                        });
+                    }
+                }).addTo(map);
+
+                const adjustedBounds = [
+                    [bounds.getSouth() - paddingY, bounds.getWest() - paddingX],
+                    [bounds.getNorth() + paddingY, bounds.getEast() + paddingX]
+                ];
+                map.fitBounds(adjustedBounds);
+                hideLoadingSpinner();
+            })
+            .catch(error => {
+                console.error('Error loading department GeoJSON:', error);
+                hideLoadingSpinner();
+            });
+
+        // Función para acercar a un departamento y mostrar distritos
+        function zoomToDepartment(feature, regionName) {
+            showLoadingSpinner();
+            // Limpiar capas anteriores
+            if (districtLayer) {
+                map.removeLayer(districtLayer);
+            }
+            map.removeLayer(departmentLayer);
+
+            // Acercar al departamento con animación suave
+            const bounds = L.geoJSON(feature).getBounds();
+            map.flyToBounds(bounds, { padding: [20, 20], duration: 1 });
+
+            // Cargar distritos (provincias) del departamento seleccionado
+            fetch('https://raw.githubusercontent.com/juaneladio/peru-geojson/master/peru_provincial_simple.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    // Normalizar el nombre del departamento para la comparación
+                    const filteredData = {
+                        type: "FeatureCollection",
+                        features: data.features.filter(f => {
+                            const geoJsonDepName = f.properties.NOMBDEP ? f.properties.NOMBDEP.toLowerCase() : "";
+                            return geoJsonDepName === regionName.toLowerCase();
+                        })
+                    };
+
+                    // Si no se encuentran provincias, mostrar el departamento como fallback
+                    if (filteredData.features.length === 0) {
+                        districtLayer = L.geoJSON(feature, {
+                            style: function() {
+                                return {
+                                    fillColor: '#c40000',
+                                    weight: 1,
+                                    opacity: 1,
+                                    color: '#800000',
+                                    fillOpacity: 0.5,
+                                    className: 'department-layer'
+                                };
+                            },
+                            onEachFeature: function(feature, layer) {
+                                const department = feature.properties.NOMBDEP;
+                                const hospitalsInDepartment = hospitals.filter(h =>
+                                    h.region.toLowerCase() === department.toLowerCase()
+                                );
+                                layer.bindTooltip(
+                                    `${department}: ${hospitalsInDepartment.length} hospital(es)`,
+                                    {
+                                        permanent: false,
+                                        direction: 'top',
+                                        className: 'district-tooltip'
+                                    }
+                                );
+                            }
+                        }).addTo(map);
+                    } else {
+                        districtLayer = L.geoJSON(filteredData, {
+                            style: function() {
+                                return {
+                                    fillColor: '#c40000',
+                                    weight: 1,
+                                    opacity: 1,
+                                    color: '#800000',
+                                    fillOpacity: 0.5,
+                                    className: 'department-layer'
+                                };
+                            },
+                            onEachFeature: function(feature, layer) {
+                                const districtName = feature.properties.NOMBPROV;
+                                const hospitalsInDistrict = hospitals.filter(h =>
+                                    h.region.toLowerCase() === regionName.toLowerCase() &&
+                                    h.district.toLowerCase() === districtName.toLowerCase()
+                                );
+                                layer.bindTooltip(
+                                    `${districtName}: ${hospitalsInDistrict.length} hospital(es)`,
+                                    {
+                                        permanent: false,
+                                        direction: 'top',
+                                        className: 'district-tooltip'
+                                    }
+                                );
+                            }
+                        }).addTo(map);
+                    }
+
+                    // Mostrar hospitales agrupados por distrito
+                    const filteredHospitals = hospitals.filter(hospital =>
+                        hospital.region.toLowerCase() === regionName.toLowerCase()
+                    );
+                    renderHospitalListByDistrict(filteredHospitals);
+
+                    // Mostrar botón de volver
+                    document.getElementById('backButtonContainer').style.display = 'block';
+                    hideLoadingSpinner();
+                })
+                .catch(error => {
+                    console.error('Error loading district GeoJSON:', error);
+                    // Fallback: Mostrar el departamento si falla la carga de provincias
+                    districtLayer = L.geoJSON(feature, {
+                        style: function() {
+                            return {
+                                fillColor: '#c40000',
+                                weight: 1,
+                                opacity: 1,
+                                color: '#800000',
+                                fillOpacity: 0.5
+                            };
+                        }
+                    }).addTo(map);
+                    hideLoadingSpinner();
+                });
+        }
+
+        // Función para volver al mapa nacional
+        function resetMapView() {
+            showLoadingSpinner();
+            // Limpiar capas de distritos
+            if (districtLayer) {
+                map.removeLayer(districtLayer);
+                districtLayer = null;
+            }
+
+            // Restaurar capa de departamentos
+            if (!map.hasLayer(departmentLayer)) {
+                map.addLayer(departmentLayer);
+            }
+
+            // Restaurar la vista nacional con animación suave
+            map.flyToBounds(departmentLayer.getBounds(), { duration: 1 });
+
+            // Limpiar selección y restaurar lista de hospitales
+            selectedRegion = null;
+            renderHospitalList(hospitals);
+
+            // Ocultar botón de volver
+            document.getElementById('backButtonContainer').style.display = 'none';
+
+            // Limpiar búsqueda
+            document.getElementById('searchBar').value = '';
+            hideLoadingSpinner();
+        }
+
+        // Renderizar lista de hospitales agrupados por distrito
+        function renderHospitalListByDistrict(filteredHospitals) {
+            const hospitalList = document.getElementById('hospitalList');
+            hospitalList.innerHTML = '';
+
+            // Agrupar hospitales por distrito
+            const hospitalsByDistrict = filteredHospitals.reduce((acc, hospital) => {
+                const district = hospital.district;
+                if (!acc[district]) {
+                    acc[district] = [];
+                }
+                acc[district].push(hospital);
+                return acc;
+            }, {});
+
+            // Ordenar distritos alfabéticamente
+            const sortedDistricts = Object.keys(hospitalsByDistrict).sort();
+
+            // Renderizar hospitales agrupados por distrito
+            sortedDistricts.forEach(district => {
+                const districtGroup = document.createElement('div');
+                districtGroup.className = 'district-group';
+
+                const districtTitle = document.createElement('div');
+                districtTitle.className = 'district-title';
+                districtTitle.textContent = district;
+                districtGroup.appendChild(districtTitle);
+
+                hospitalsByDistrict[district].forEach(hospital => {
+                    const item = document.createElement('div');
+                    item.className = 'hospital-list-item bg-white p-4 rounded-lg shadow-lg border border-[#800000] cursor-pointer';
+                    item.innerHTML = `
+                        <h3 class="text-lg font-bold text-[#800000]">${hospital.name}</h3>
+                        <p><a href="${hospital.website}" target="_blank" class="text-[#800000] hover:underline">Visitar sitio web para verificar disponibilidad</a></p>
+                        <p class="text-sm text-gray-600">Región: ${hospital.region}</p>
+                    `;
+                    item.addEventListener('click', () => {
+                        window.open(hospital.website, '_blank');
+                    });
+                    districtGroup.appendChild(item);
+                });
+
+                hospitalList.appendChild(districtGroup);
+            });
+        }
+
+        // Renderizar lista de hospitales (vista nacional)
+        function renderHospitalList(filteredHospitals) {
+            const hospitalList = document.getElementById('hospitalList');
+            hospitalList.innerHTML = '';
+            filteredHospitals.forEach(hospital => {
+                const item = document.createElement('div');
+                item.className = 'hospital-list-item bg-white p-4 rounded-lg shadow-lg border border-[#800000] cursor-pointer';
+                item.innerHTML = `
+                    <h3 class="text-lg font-bold text-[#800000]">${hospital.name}</h3>
+                    <p><a href="${hospital.website}" target="_blank" class="text-[#800000] hover:underline">Visitar sitio web para verificar disponibilidad</a></p>
+                    <p class="text-sm text-gray-600">Región: ${hospital.region}</p>
+                `;
+                item.addEventListener('click', () => {
+                    window.open(hospital.website, '_blank');
+                });
+                hospitalList.appendChild(item);
+            });
+        }
+        renderHospitalList(hospitals);
+
+        // Funcionalidad de búsqueda
+        const searchBar = document.getElementById('searchBar');
+        searchBar.addEventListener('input', () => {
+            const query = searchBar.value.toLowerCase();
+            const filteredHospitals = hospitals.filter(hospital =>
+                hospital.name.toLowerCase().includes(query) ||
+                hospital.region.toLowerCase().includes(query) ||
+                hospital.district.toLowerCase().includes(query)
+            );
+            if (selectedRegion) {
+                const regionHospitals = filteredHospitals.filter(hospital =>
+                    hospital.region.toLowerCase() === selectedRegion.toLowerCase()
+                );
+                renderHospitalListByDistrict(regionHospitals);
+            } else {
+                renderHospitalList(filteredHospitals);
+            }
+        });
+    </script>
+</body>
+</html>

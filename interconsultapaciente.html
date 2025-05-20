@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interconsulta Médica - Hospital Nacional Arzobispo Loayza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5e6e3 0%, #e6d3d1 100%);
+            color: #333333;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+        main {
+            background: linear-gradient(135deg, #f8d8d4 0%, #f0e2df 100%);
+            transition: background 0.3s;
+        }
+        .card, .specialty-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover, .specialty-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(128, 0, 0, 0.2);
+            filter: brightness(1.1);
+        }
+        .fade-in {
+            opacity: 0;
+        }
+        .modal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: scale(0.8);
+        }
+        .modal.show {
+            transform: scale(1);
+        }
+        .search-bar {
+            transition: all 0.3s ease;
+        }
+        .search-bar:focus {
+            box-shadow: 0 0 10px rgba(128, 0, 0, 0.3);
+        }
+        .to-top {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .carousel-item {
+            border-radius: 15px;
+            position: relative;
+            background: linear-gradient(90deg, #800000, #a52a2a);
+        }
+        .banner-image {
+            transition: transform 0.3s ease;
+        }
+        .banner-image:hover {
+            transform: scale(1.05);
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #a52a2a;
+            filter: brightness(1.1);
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            transition: background 0.3s;
+        }
+        .hospital-icon {
+            color: #800000;
+            background: #FFFFFF;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: color 0.3s, background 0.3s;
+        }
+        .section-container {
+            background: #FFFFFF;
+            border: 2px solid #800000;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(128, 0, 0, 0.1);
+            padding: 20px;
+            transition: background 0.3s, border 0.3s;
+        }
+        h2 {
+            color: #800000;
+            position: relative;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, #800000, #a52a2a);
+            bottom: -5px;
+            left: 25%;
+            transition: background 0.3s;
+        }
+        .specialty-card {
+            background: #FFFFFF;
+            color: #800000;
+            transition: background 0.3s, color 0.3s;
+        }
+        .card {
+            background: #FFFFFF;
+            color: #800000;
+            border: 1px solid #800000;
+            border-radius: 15px;
+            transition: background 0.3s, color 0.3s, border 0.3s;
+        }
+        .availability-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .available {
+            background-color: #28a745;
+        }
+        .occupied {
+            background-color: #dc3545;
+        }
+        .availability-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .availability-table th, .availability-table td {
+            border: 1px solid #800000;
+            padding: 12px;
+            text-align: left;
+            transition: border 0.3s;
+        }
+        .availability-table th {
+            background-color: #800000;
+            color: white;
+            transition: background 0.3s;
+        }
+        .availability-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+            transition: background 0.3s;
+        }
+        .header-button {
+            background-color: #800000;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-left: 12px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .header-button:hover {
+            background-color: #a52a2a;
+            box-shadow: 0 0 8px rgba(128, 0, 0, 0.3);
+        }
+        footer {
+            background: #800000;
+            color: #FFFFFF;
+            transition: background 0.3s;
+        }
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #800000;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 10;
+            max-height: 300px;
+            overflow-y: auto;
+            transition: background 0.3s, border 0.3s;
+        }
+        .search-dropdown.show {
+            display: block;
+        }
+        .search-dropdown-item {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+        .search-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .search-dropdown-item:hover {
+            background: #f0e2df;
+        }
+        .search-dropdown-item p {
+            margin: 0;
+            color: #800000;
+            transition: color 0.3s;
+        }
+        .search-dropdown-item .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .search-dropdown-item button {
+            background: #800000;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            font-size: 0.9rem;
+        }
+        .search-dropdown-item button:hover {
+            background: #a52a2a;
+            box-shadow: 0 0 8px rgba(128, 0, 0, 0.3);
+        }
+        .doctor-photo {
+            transition: transform 0.3s ease;
+        }
+        .doctor-photo:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-white text-[#800000] py-6 shadow-lg sticky top-0 z-20">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-hospital hospital-icon text-4xl mr-4"></i>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Interconsulta Médica</h1>
+                    <p class="text-sm md:text-base">Hospital Nacional Arzobispo Loayza - Cuidando la salud del Perú</p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="search-container">
+                    <input type="text" id="searchBar" class="search-bar p-2 rounded-lg border border-[#800000] text-[#800000] focus:outline-none" placeholder="Buscar doctor o especialidad..." aria-label="Buscar doctor o especialidad">
+                    <div class="search-dropdown" id="searchDropdown"></div>
+                </div>
+                <button id="interfaceBtn" onclick="window.location.href='historial medico paciente.html'" class="header-button">Interfaz</button>
+                <button id="logoutBtn" onclick="window.location.href='login.html'" class="header-button">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <section class="mb-16 section-container">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">Especialidades Destacadas</h2>
+            <div class="relative overflow-hidden">
+                <div id="specialtyCarousel" class="flex gap-4"></div>
+                <button id="prevSlide" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#800000] text-white p-4 rounded-full hover:bg-[#a52a2a]"><i class="fas fa-chevron-left text-xl"></i></button>
+                <button id="nextSlide" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#800000] text-white p-4 rounded-full hover:bg-[#a52a2a]"><i class="fas fa-chevron-right text-xl"></i></button>
+            </div>
+        </section>
+
+        <section class="mb-16 section-container">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">Todas las Especialidades</h2>
+            <div id="specialtiesAccordion"></div>
+        </section>
+
+        <section class="mb-16 section-container">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">Nuestros Especialistas</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="doctorsList"></div>
+        </section>
+
+        <section class="mb-16 section-container" id="availabilitySection">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">Disponibilidad de Especialistas</h2>
+            <div class="mb-6">
+                <input type="text" id="availabilitySearch" class="search-bar p-2 w-full rounded-lg border border-[#800000] text-[#800000] focus:outline-none" placeholder="Buscar por especialidad..." aria-label="Buscar por especialidad">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="availability-table">
+                    <thead>
+                        <tr>
+                            <th>Especialidad</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="availabilityTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-16 section-container" id="hospitalStatsSection">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">Estadísticas e Información del Hospital</h2>
+            <div class="mb-6 text-[#800000] fade-in">
+                <p class="text-lg">
+                    El Hospital Nacional Arzobispo Loayza, fundado en 1549 por Gerónimo de Loayza, es el hospital más antiguo de Lima y uno de los más importantes del Perú. Ubicado en Av. Alfonso Ugarte 848, Cercado de Lima, es administrado por el Ministerio de Salud y ofrece atención integral de salud altamente especializada con calidad, calidez, equidad e interculturalidad. Inicialmente dedicado a la población indígena y mujeres pobres, hoy atiende a pacientes de ambos sexos, siendo el hospital general más grande del país.
+                </p>
+                <p class="text-lg mt-4">
+                    Reconocido por su labor social, el hospital ha sido certificado como establecimiento Amigo de la Madre, la Niña y el Niño para el período 2023-2026, destacándose en la atención materna e infantil. Además, desarrolla actividades docentes y de investigación, contribuyendo al avance de la salud en el país.
+                </p>
+            </div>
+            <div class="overflow-x-auto mb-6 fade-in">
+                <table class="availability-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Valor</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Año de Fundación</td>
+                            <td>1549</td>
+                            <td>Fundado como Hospital de Santa Ana por Gerónimo de Loayza.</td>
+                        </tr>
+                        <tr>
+                            <td>Inauguración Actual Sede</td>
+                            <td>11 de diciembre de 1924</td>
+                            <td>Construcción iniciada en 1915, ubicada en Av. Alfonso Ugarte.</td>
+                        </tr>
+                        <tr>
+                            <td>Estudios Tomográficos</td>
+                            <td>85,000+ (2020-2024)</td>
+                            <td>Estudios altamente especializados realizados desde 2020 hasta julio 2024.</td>
+                        </tr>
+                        <tr>
+                            <td>Atenciones en Neumología</td>
+                            <td>4,800+ (2024)</td>
+                            <td>Atenciones por asma, neumonía y tuberculosis en 2024.</td>
+                        </tr>
+                        <tr>
+                            <td>Certificaciones</td>
+                            <td>Amigo de la Madre, la Niña y el Niño</td>
+                            <td>Certificado para 2023-2026 por atención materna e infantil.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para agendar cita -->
+    <div id="appointmentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-2xl w-full max-w-md text-[#800000] shadow-2xl transition-all duration-300">
+            <h3 class="text-2xl font-bold mb-6 text-center">Agendar Cita</h3>
+            <form id="appointmentForm">
+                <div class="mb-4">
+                    <label for="patientName" class="block text-sm font-medium">Nombre del Paciente</label>
+                    <input type="text" id="patientName" class="w-full p-3 border border-[#800000] rounded-lg focus:ring-2 focus:ring-[#800000]" required aria-required="true">
+                </div>
+                <div class="mb-4">
+                    <label for="appointmentDate" class="block text-sm font-medium">Fecha de Cita</label>
+                    <input type="date" id="appointmentDate" class="w-full p-3 border border-[#800000] rounded-lg focus:ring-2 focus:ring-[#800000]" required aria-required="true">
+                </div>
+                <div class="mb-4">
+                    <label for="specialty" class="block text-sm font-medium">Especialidad</label>
+                    <input type="text" id="specialty" class="w-full p-3 border border-[#800000] rounded-lg bg-gray-100" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="doctorName" class="block text-sm font-medium">Especialista</label>
+                    <select id="doctorName" class="w-full p-3 border border-[#800000] rounded-lg focus:ring-2 focus:ring-[#800000]" required aria-required="true">
+                        <option value="">Seleccione un doctor</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="closeModal" class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">Cancelar</button>
+                    <button type="submit" class="bg-[#800000] text-white px-4 py-2 rounded-lg hover:bg-[#a52a2a]">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón Volver Arriba -->
+    <button id="toTop" class="to-top fixed bottom-6 right-6 bg-[#800000] text-white p-3 rounded-full shadow-lg hidden"><i class="fas fa-arrow-up"></i></button>
+
+    <footer class="py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg font-semibold">Hospital Nacional Arzobispo Loayza</p>
+            <p class="mt-2">Av. Alfonso Ugarte 848, Cercado de Lima, Perú</p>
+            <p>Teléfono: (01) 614-9200 | Correo: info@hnal.gob.pe</p>
+            <p class="mt-4">© 2025 Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de especialidades con categorías
+        const specialties = [
+            {
+                category: "Especialidades Quirúrgicas",
+                items: [
+                    { name: "Neurocirugía", description: "Cirugías del cerebro y sistema nervioso.", icon: "fa-brain", image: "neurocirugia.jpeg" },
+                    { name: "Traumatología", description: "Tratamiento de lesiones óseas y musculares.", icon: "fa-bone", image: "https://via.placeholder.com/600x400?text=Traumatologia" },
+                    { name: "Cirugía General", description: "Procedimientos quirúrgicos diversos.", icon: "fa-scalpel", image: "https://via.placeholder.com/600x400?text=Cirugia" },
+                    { name: "Urología", description: "Enfermedades del sistema urinario y próstata.", icon: "fa-bladder", image: "https://via.placeholder.com/600x400?text=Urologia" },
+                ]
+            },
+            {
+                category: "Especialidades Clínicas",
+                items: [
+                    { name: "Cardiología", description: "Diagnóstico y tratamiento de enfermedades del corazón.", icon: "fa-heartbeat", image: "./cardiologia.jpeg" },
+                    { name: "Pediatría", description: "Cuidado médico para niños y adolescentes.", icon: "fa-child", image: "pediatria.jpeg" },
+                    { name: "Ginecología y Obstetricia", description: "Salud reproductiva y atención al embarazo.", icon: "fa-female", image: "https://via.placeholder.com/600x400?text=Ginecologia" },
+                    { name: "Endocrinología", description: "Trastornos hormonales y metabólicos.", icon: "fa-thyroid", image: "https://via.placeholder.com/600x400?text=Endocrinologia" },
+                    { name: "Psiquiatría", description: "Salud mental y trastornos psicológicos.", icon: "fa-head-side-brain", image: "https://via.placeholder.com/600x400?text=Psiquiatria" },
+                    { name: "Medicina Interna", description: "Atención integral de adultos.", icon: "fa-stethoscope", image: "https://via.placeholder.com/600x400?text=Medicina+Interna" },
+                ]
+            },
+            {
+                category: "Especialidades Diagnósticas",
+                items: [
+                    { name: "Radiología", description: "Diagnósticos por imágenes.", icon: "fa-x-ray", image: "radiologia.jpg" },
+                    { name: "Patología", description: "Análisis de tejidos y diagnósticos.", icon: "fa-microscope", image: "https://via.placeholder.com/600x400?text=Patologia" },
+                ]
+            },
+            {
+                category: "Otras Especialidades",
+                items: [
+                    { name: "Nefrología", description: "Tratamiento de enfermedades renales.", icon: "fa-kidneys", image: "https://via.placeholder.com/600x400?text=Nefrologia" },
+                    { name: "Oncología", description: "Diagnóstico y tratamiento del cáncer.", icon: "fa-ribbon", image: "https://via.placeholder.com/600x400?text=Oncologia" },
+                    { name: "Gastroenterología", description: "Enfermedades del sistema digestivo.", icon: "fa-stomach", image: "https://via.placeholder.com/600x400?text=Gastroenterologia" },
+                    { name: "Neumología", description: "Tratamiento de enfermedades pulmonares.", icon: "fa-lungs", image: "https://via.placeholder.com/600x400?text=Neumologia" },
+                    { name: "Dermatología", description: "Cuidado de la piel y sus enfermedades.", icon: "fa-skin", image: "https://via.placeholder.com/600x400?text=Dermatologia" },
+                    { name: "Oftalmología", description: "Diagnóstico y tratamiento de problemas visuales.", icon: "fa-eye", image: "https://via.placeholder.com/600x400?text=Oftalmologia" },
+                    { name: "Otorrinolaringología", description: "Enfermedades de oído, nariz y garganta.", icon: "fa-ear", image: "https://via.placeholder.com/600x400?text=Otorrino" },
+                    { name: "Anestesiología", description: "Manejo del dolor y anestesia en cirugías.", icon: "fa-syringe", image: "https://via.placeholder.com/600x400?text=Anestesiologia" },
+                    { name: "Medicina de Emergencia", description: "Atención inmediata en urgencias.", icon: "fa-ambulance", image: "https://via.placeholder.com/600x400?text=Emergencia" },
+                ]
+            }
+        ];
+
+        // Datos de doctores con imágenes
+        const doctors = [
+            { 
+                name: "Dra. Yaqueline Jessica Suaña Gomez", 
+                specialty: "Neurocirugía", 
+                availability: { "Lunes": true, "Martes": false, "Miércoles": true, "Jueves": true, "Viernes": false },
+                image: "doctora 1.png"
+            },
+            { 
+                name: "Dra. Narvi Gretel Alvarez Bazan", 
+                specialty: "Pediatría", 
+                availability: { "Lunes": false, "Martes": true, "Miércoles": false, "Jueves": false, "Viernes": true },
+                image: "doctora 2.png"
+            },
+            { 
+                name: "Dr. Pedro Ernesto Castillo Chirinos", 
+                specialty: "Nefrología", 
+                availability: { "Lunes": true, "Martes": true, "Miércoles": true, "Jueves": false, "Viernes": true },
+                image: "doctor 1.png"
+            },
+            { 
+                name: "Dr. Juan Pérez Vargas", 
+                specialty: "Cardiología", 
+                availability: { "Lunes": true, "Martes": false, "Miércoles": true, "Jueves": true, "Viernes": true },
+                image: "doctor 2.png"
+            },
+            { 
+                name: "Dra. María Gómez Salazar", 
+                specialty: "Ginecología y Obstetricia", 
+                availability: { "Lunes": false, "Martes": true, "Miércoles": false, "Jueves": true, "Viernes": false },
+                image: "doctora 3.png"
+            },
+            { 
+                name: "Dr. Luis Fernández", 
+                specialty: "Traumatología", 
+                availability: { "Lunes": true, "Martes": true, "Miércoles": false, "Jueves": true, "Viernes": true },
+                image: "doctor 3.png"
+            },
+        ];
+
+        // Cargar carrusel de especialidades destacadas
+        const carousel = document.getElementById('specialtyCarousel');
+        const featuredSpecialties = [
+            specialties[0].items[0], // Neurocirugía
+            specialties[1].items[0], // Cardiología
+            specialties[1].items[1], // Pediatría
+            specialties[2].items[0], // Radiología
+        ];
+        featuredSpecialties.forEach((specialty, index) => {
+            const slide = document.createElement('div');
+            slide.className = `carousel-item flex flex-col md:flex-row w-full p-4 ${index !== 0 ? 'hidden' : ''}`;
+            slide.innerHTML = `
+                <div class="md:w-1/2 text-white p-6 rounded-l-lg">
+                    <i class="fas ${specialty.icon} text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold">${specialty.name}</h3>
+                    <p class="mt-2 text-lg">${specialty.description}</p>
+                    <button class="mt-4 bg-white text-[#800000] px-4 py-2 rounded-lg hover:bg-gray-200 schedule-btn" data-specialty="${specialty.name}">Agendar Cita</button>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="${specialty.image}" alt="${specialty.name}" class="banner-image w-full h-64 object-cover rounded-r-lg border-2 border-[#FFFFFF]">
+                </div>
+            `;
+            carousel.appendChild(slide);
+        });
+
+        // Carrusel funcionalidad
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-item');
+        const prevSlide = document.getElementById('prevSlide');
+        const nextSlide = document.getElementById('nextSlide');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('hidden', i !== index);
+                if (i === index) {
+                    gsap.fromTo(slide, { opacity: 0, x: 100 }, { opacity: 1, x: 0, duration: 0.5 });
+                }
+            });
+        }
+
+        let autoSlideInterval = setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 5000);
+
+        nextSlide.addEventListener('click', () => {
+            clearInterval(autoSlideInterval);
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+            autoSlideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }, 5000);
+        });
+
+        prevSlide.addEventListener('click', () => {
+            clearInterval(autoSlideInterval);
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+            autoSlideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }, 5000);
+        });
+
+        // Cargar acordeón de especialidades
+        const accordion = document.getElementById('specialtiesAccordion');
+        specialties.forEach((category, catIndex) => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'mb-4';
+            categoryDiv.innerHTML = `
+                <div class="accordion-header bg-[#800000] text-white p-4 rounded-lg flex justify-between items-center">
+                    <h3 class="text-xl font-bold">${category.category}</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content hidden bg-white text-[#800000] p-4 rounded-b-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+            `;
+            const content = categoryDiv.querySelector('.accordion-content .grid');
+            category.items.forEach((specialty, index) => {
+                const card = document.createElement('div');
+                card.className = 'specialty-card flex items-center p-4 bg-gray-100 rounded-lg fade-in';
+                card.innerHTML = `
+                    <i class="fas ${specialty.icon} text-2xl mr-4"></i>
+                    <div>
+                        <h4 class="text-lg font-bold">${specialty.name}</h4>
+                        <p class="text-sm">${specialty.description}</p>
+                        <button class="mt-2 bg-[#800000] text-white px-3 py-1 rounded-lg hover:bg-[#a52a2a] schedule-btn text-sm" data-specialty="${specialty.name}">Agendar Cita</button>
+                    </div>
+                `;
+                content.appendChild(card);
+                gsap.to(card, { opacity: 1, y: 0, duration: 0.5, delay: (catIndex * category.items.length + index) * 0.1 });
+            });
+            accordion.appendChild(categoryDiv);
+        });
+
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                content.classList.toggle('hidden');
+                const icon = header.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+
+        // Cargar doctores con imágenes
+        const doctorsList = document.getElementById('doctorsList');
+        function renderDoctors(filteredDoctors) {
+            doctorsList.innerHTML = '';
+            filteredDoctors.forEach((doctor, index) => {
+                const card = document.createElement('div');
+                card.className = 'card bg-white text-[#800000] p-6 rounded-lg shadow-lg fade-in text-center';
+                const availabilityDays = Object.entries(doctor.availability)
+                    .filter(([_, available]) => available)
+                    .map(([day]) => day)
+                    .join(', ');
+                card.innerHTML = `
+                    <img src="${doctor.image}" alt="${doctor.name}" class="doctor-photo w-24 h-24 rounded-full mx-auto mb-4 object-cover" style="border: 2px solid #800000;">
+                    <h3 class="text-xl font-bold">${doctor.name}</h3>
+                    <p class="text-lg font-semibold">${doctor.specialty}</p>
+                    <p class="mt-2">Especialista en ${doctor.specialty.toLowerCase()}.</p>
+                    <p class="mt-2"><span class="availability-status ${availabilityDays ? 'available' : 'occupied'}"></span>Días disponibles: ${availabilityDays || 'Ninguno'}</p>
+                    <button class="mt-4 bg-[#800000] text-white px-4 py-2 rounded-lg hover:bg-[#a52a2a] schedule-btn ${!availabilityDays ? 'opacity-50 cursor-not-allowed' : ''}" data-specialty="${doctor.specialty}" data-doctor="${doctor.name}" ${!availabilityDays ? 'disabled' : ''}>Agendar Cita</button>
+                `;
+                doctorsList.appendChild(card);
+                gsap.to(card, { opacity: 1, y: 0, duration: 0.5, delay: index * 0.1 });
+            });
+        }
+        renderDoctors(doctors);
+
+        // Cargar tabla de disponibilidad
+        const availabilityTableBody = document.getElementById('availabilityTableBody');
+        function renderAvailabilityTable(specialtiesToShow) {
+            availabilityTableBody.innerHTML = '';
+            specialtiesToShow.forEach(specialty => {
+                const specialtyDoctors = doctors.filter(d => d.specialty === specialty.name);
+                const row = document.createElement('tr');
+                const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+                const availabilityCells = days.map(day => {
+                    const availableDoctors = specialtyDoctors.filter(d => d.availability[day]).map(d => d.name);
+                    return `<td>${availableDoctors.length > 0 ? availableDoctors.join(', ') : '-'}</td>`;
+                }).join('');
+                const hasAvailability = specialtyDoctors.some(d => Object.values(d.availability).some(v => v));
+                row.innerHTML = `
+                    <td>${specialty.name}</td>
+                    ${availabilityCells}
+                    <td>
+                        <button class="bg-[#800000] text-white px-3 py-1 rounded-lg hover:bg-[#a52a2a] schedule-btn ${!hasAvailability ? 'opacity-50 cursor-not-allowed' : ''}" data-specialty="${specialty.name}" ${!hasAvailability ? 'disabled' : ''}>Agendar</button>
+                    </td>
+                `;
+                availabilityTableBody.appendChild(row);
+            });
+        }
+
+        // Obtener todas las especialidades
+        const allSpecialties = specialties.flatMap(category => category.items);
+        renderAvailabilityTable(allSpecialties);
+
+        // Búsqueda por disponibilidad (independiente)
+        const availabilitySearch = document.getElementById('availabilitySearch');
+        availabilitySearch.addEventListener('input', () => {
+            const query = availabilitySearch.value.toLowerCase();
+            const filteredSpecialties = allSpecialties.filter(specialty =>
+                specialty.name.toLowerCase().includes(query)
+            );
+            renderAvailabilityTable(filteredSpecialties);
+        });
+
+        // Búsqueda de doctores (header, solo afecta "Nuestros Especialistas" y dropdown)
+        const searchBar = document.getElementById('searchBar');
+        const searchDropdown = document.getElementById('searchDropdown');
+        function updateSearchDropdown(query) {
+            query = query.toLowerCase().trim();
+            searchDropdown.innerHTML = '';
+            if (!query) {
+                searchDropdown.classList.remove('show');
+                return;
+            }
+            const filteredDoctors = doctors.filter(doctor =>
+                doctor.name.toLowerCase().includes(query) || doctor.specialty.toLowerCase().includes(query)
+            );
+            if (filteredDoctors.length === 0) {
+                searchDropdown.classList.remove('show');
+                return;
+            }
+            filteredDoctors.forEach(doctor => {
+                const item = document.createElement('div');
+                item.className = 'search-dropdown-item';
+                item.innerHTML = `
+                    <p><strong>${doctor.name}</strong></p>
+                    <p>${doctor.specialty}</p>
+                    <div class="buttons">
+                        <button data-action="schedule" data-specialty="${doctor.specialty}" data-doctor="${doctor.name}">Agendar Cita</button>
+                        <button data-action="availability" data-specialty="${doctor.specialty}">Ver Disponibilidad</button>
+                    </div>
+                `;
+                searchDropdown.appendChild(item);
+            });
+            searchDropdown.classList.add('show');
+        }
+
+        searchBar.addEventListener('input', () => {
+            const query = searchBar.value;
+            updateSearchDropdown(query);
+            const filteredDoctors = doctors.filter(doctor =>
+                doctor.name.toLowerCase().includes(query.toLowerCase()) || doctor.specialty.toLowerCase().includes(query.toLowerCase())
+            );
+            renderDoctors(filteredDoctors);
+        });
+
+        searchBar.addEventListener('focus', () => {
+            updateSearchDropdown(searchBar.value);
+        });
+
+        searchBar.addEventListener('blur', (e) => {
+            setTimeout(() => {
+                if (!searchDropdown.contains(e.relatedTarget) && e.relatedTarget !== searchBar) {
+                    searchDropdown.classList.remove('show');
+                }
+            }, 100);
+        });
+
+        searchDropdown.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+            const action = button.dataset.action;
+            const specialty = button.dataset.specialty;
+            const doctorName = button.dataset.doctor;
+            if (action === 'schedule') {
+                const specialtyInput = document.getElementById('specialty');
+                const doctorSelect = document.getElementById('doctorName');
+                specialtyInput.value = specialty;
+                doctorSelect.innerHTML = '<option value="">Seleccione un doctor</option>';
+                const availableDoctors = doctors.filter(doc => doc.specialty === specialty && Object.values(doc.availability).some(v => v));
+                availableDoctors.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.name;
+                    option.textContent = doc.name;
+                    doctorSelect.appendChild(option);
+                });
+                if (doctorName) {
+                    doctorSelect.value = doctorName;
+                }
+                document.getElementById('appointmentModal').classList.remove('hidden');
+                document.querySelector('.modal').classList.add('show');
+            } else if (action === 'availability') {
+                document.getElementById('availabilitySection').scrollIntoView({ behavior: 'smooth' });
+            }
+            searchDropdown.classList.remove('show');
+        });
+
+        // Modal
+        const modal = document.getElementById('appointmentModal');
+        const closeModal = document.getElementById('closeModal');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const specialtyInput = document.getElementById('specialty');
+        const doctorSelect = document.getElementById('doctorName');
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('schedule-btn') && !e.target.disabled) {
+                const specialty = e.target.dataset.specialty;
+                specialtyInput.value = specialty;
+                doctorSelect.innerHTML = '<option value="">Seleccione un doctor</option>';
+                const availableDoctors = doctors.filter(doc => doc.specialty === specialty && Object.values(doc.availability).some(v => v));
+                availableDoctors.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.name;
+                    option.textContent = doc.name;
+                    doctorSelect.appendChild(option);
+                });
+                modal.classList.remove('hidden');
+                modal.querySelector('.modal').classList.add('show');
+            }
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.querySelector('.modal').classList.remove('show');
+        });
+
+        appointmentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert(`Cita agendada con éxito para ${doctorSelect.value} en ${specialtyInput.value}`);
+            modal.classList.add('hidden');
+            appointmentForm.reset();
+        });
+
+        // Botones de Interfaz y Cerrar Sesión
+        const interfaceBtn = document.getElementById('interfaceBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        interfaceBtn.addEventListener('click', () => {
+            alert('Interfaz: Aquí se cambiaría la vista o modo de la interfaz.');
+        });
+        logoutBtn.addEventListener('click', () => {
+            alert('Sesión cerrada con éxito.');
+        });
+
+        // Botón Volver Arriba
+        const toTop = document.getElementById('toTop');
+        window.addEventListener('scroll', () => {
+            toTop.classList.toggle('hidden', window.scrollY < 300);
+        });
+        toTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Animaciones iniciales
+        gsap.from('.hospital-icon', { scale: 0, duration: 1, ease: 'elastic.out(1, 0.3)' });
+        gsap.from('header h1', { y: -50, opacity: 0, duration: 1, delay: 0.5 });
+
+        // Animaciones para la sección de estadísticas
+        gsap.to('#hospitalStatsSection .fade-in', { opacity: 1, y: 0, duration: 0.5, stagger: 0.2 });
+    </script>
+</body>
+</html>
