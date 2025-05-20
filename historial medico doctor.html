@@ -9,14 +9,26 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
+      background: linear-gradient(to bottom, #fffbeb, #e5e7eb);
       display: flex;
       height: 100vh;
       overflow: hidden;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQYV2NkYGD4z8DAwMgABXAGNgYGBgYGBgQAAAAMJAD8AAScDPZu8iW0AAAAASUVORK5CYII=') repeat;
+      opacity: 0.03;
+      z-index: -1;
     }
     .sidebar {
       width: 250px;
-      background-color: #4a0e0e;
+      background: linear-gradient(to bottom, #4a0e0e, #6b1a1a);
       color: white;
       padding: 20px;
       display: flex;
@@ -28,10 +40,11 @@
       background-color: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .sidebar-item:hover {
       background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
     }
     .container {
       flex: 1;
@@ -40,12 +53,13 @@
       overflow: hidden;
     }
     .header {
-      background-color: white;
+      background: linear-gradient(to right, #fefefe, #f5f5f5);
       padding: 15px 30px;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid #d1d5db;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     .user-info {
       display: flex;
@@ -66,7 +80,7 @@
     }
     .user-role {
       font-size: 14px;
-      color: #6b7280;
+      color: #4b5563;
     }
     .header-actions {
       display: flex;
@@ -74,17 +88,18 @@
       gap: 15px;
     }
     .action-button {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
       color: white;
       padding: 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       text-align: center;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
     .action-button:hover {
-      background-color: #b91c1c;
+      background: linear-gradient(to right, #b91c1c, #dc2626);
+      transform: scale(1.05);
     }
     .main-content {
       display: flex;
@@ -93,13 +108,14 @@
       padding: 20px;
       gap: 20px;
       overflow: hidden;
+      background: none;
     }
     .left-section {
       flex: 1;
-      background-color: white;
+      background: linear-gradient(to bottom, #fefefe, #f5f5f5);
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       overflow-y: auto;
     }
     .right-section {
@@ -110,23 +126,23 @@
       flex-shrink: 0;
     }
     .right-card {
-      background-color: white;
+      background: linear-gradient(to bottom, #f5f5f5, #e5e7eb);
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     .section-title {
       font-size: 18px;
       font-weight: bold;
       margin-bottom: 15px;
-      color: #374151;
+      color: #1f2937;
       display: flex;
       align-items: center;
       gap: 10px;
     }
     .status-enabled {
-      background-color: #22c55e;
-      color: white;
+      background-color: #2dd4bf;
+      color: #1a1a1a;
       padding: 5px 10px;
       border-radius: 5px;
       font-size: 14px;
@@ -134,7 +150,7 @@
     }
     .doctor-info, .workplace-entry, .current-workplace {
       margin-bottom: 20px;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -149,15 +165,15 @@
       justify-content: space-between;
       margin-bottom: 10px;
       padding: 8px 0;
-      border-bottom: 1px dashed #e0e0e0;
+      border-bottom: 1px dashed #d1d5db;
       transition: background-color 0.3s ease;
     }
     .info-row:hover {
-      background-color: #f0f0f0;
+      background-color: #e5e7eb;
     }
     .info-label {
       font-weight: bold;
-      color: #6b7280;
+      color: #4b5563;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -178,8 +194,8 @@
       margin-bottom: 20px;
     }
     .record-entry {
-      background-color: #fafafa;
-      border: 1px solid #e0e0e0;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
+      border: 1px solid #d1d5db;
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 15px;
@@ -191,11 +207,11 @@
     }
     .record-date {
       font-weight: bold;
-      color: #374151;
+      color: #1f2937;
       margin-bottom: 8px;
     }
     .record-detail {
-      color: #6b7280;
+      color: #4b5563;
       line-height: 1.5;
       margin-bottom: 5px;
     }
@@ -209,7 +225,7 @@
       margin-bottom: 20px;
     }
     .patient-form {
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -221,30 +237,31 @@
     .form-group label {
       display: block;
       font-weight: bold;
-      color: #374151;
+      color: #1f2937;
       margin-bottom: 5px;
     }
     .form-group input,
     .form-group select {
       width: 100%;
       padding: 8px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #d1d5db;
       border-radius: 5px;
       font-size: 14px;
       color: #1f2937;
+      background-color: #fefefe;
     }
     .form-group input:focus,
     .form-group select:focus {
       outline: none;
       border-color: #dc2626;
-      box-shadow: 0 0 5px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 0 5px rgba(220, 38, 38, 0.3);
     }
     .patient-list {
       margin-top: 20px;
     }
     .patient-entry {
-      background-color: #fafafa;
-      border: 1px solid #e0e0e0;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
+      border: 1px solid #d1d5db;
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 15px;
@@ -262,33 +279,36 @@
     }
     .patient-name {
       font-weight: bold;
-      color: #374151;
+      color: #1f2937;
       margin-bottom: 8px;
     }
     .patient-detail {
-      color: #6b7280;
+      color: #4b5563;
       line-height: 1.5;
       margin-bottom: 5px;
     }
     .history-button, .whatsapp-button {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
       color: white;
       padding: 8px 12px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
       font-size: 14px;
       margin-top: 5px;
     }
     .whatsapp-button {
-      background-color: #25D366;
+      background: linear-gradient(to right, #25D366, #34D399);
+      color: #1a1a1a;
     }
     .history-button:hover {
-      background-color: #b91c1c;
+      background: linear-gradient(to right, #b91c1c, #dc2626);
+      transform: scale(1.05);
     }
     .whatsapp-button:hover {
-      background-color: #20b858;
+      background: linear-gradient(to right, #20b858, #25D366);
+      transform: scale(1.05);
     }
     .hidden {
       display: none;
@@ -310,32 +330,33 @@
     }
     .calendar-day {
       padding: 10px;
-      background-color: #fafafa;
-      border: 1px solid #e0e0e0;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
+      border: 1px solid #d1d5db;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .calendar-day.header {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
       color: white;
       font-weight: bold;
       cursor: default;
     }
     .calendar-day.empty {
-      background-color: #f0f0f0;
+      background-color: #d1d5db;
       cursor: default;
     }
-    .calendar-day.has-appointment {
-      background-color: #fee2e2;
-      font-weight: bold;
+    .calendar-day.fully-booked {
+      background: linear-gradient(to bottom, #ef4444, #dc2626);
+      color: white;
     }
     .calendar-day:hover:not(.header):not(.empty) {
-      background-color: #e5e7eb;
+      background: linear-gradient(to bottom, #e5e7eb, #d9d9d9);
+      transform: scale(1.02);
     }
     .expanded-day {
       margin-top: 20px;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -350,25 +371,27 @@
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
-      border-bottom: 1px dashed #e0e0e0;
+      border-bottom: 1px dashed #d1d5db;
       margin-bottom: 10px;
     }
     .appointment-slot.booked {
-      background-color: #fee2e2;
+      background: linear-gradient(to bottom, #f9a8d4, #f4a8c4);
+      color: #1a1a1a;
     }
     .appointment-slot.free {
-      background-color: #ecfccb;
+      background: linear-gradient(to bottom, #ecfccb, #d9e8a8);
+      color: #1a1a1a;
     }
     .schedule-form {
       margin-top: 20px;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     .config-section {
       margin-bottom: 20px;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -382,14 +405,14 @@
       width: 40px;
       height: 20px;
       appearance: none;
-      background-color: #e0e0e0;
+      background-color: #d1d5db;
       border-radius: 20px;
       position: relative;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
     .toggle-switch input:checked {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
     }
     .toggle-switch input::before {
       content: '';
@@ -404,6 +427,150 @@
     }
     .toggle-switch input:checked::before {
       transform: translateX(20px);
+    }
+    body.dark-theme {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+    }
+    body.dark-theme::before {
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQYV2NkYGD4z8DAwMgABXAGNgYGBgYGBgQAAAAMJAD8AAScDPZu8iW0AAAAASUVORK5CYII=') repeat;
+      opacity: 0.1;
+    }
+    body.dark-theme .sidebar {
+      background: linear-gradient(to bottom, #2a0a0a, #4a0e0e);
+    }
+    body.dark-theme .sidebar-item {
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    body.dark-theme .sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
+    }
+    body.dark-theme .header {
+      background: linear-gradient(to right, #1e1e1e, #2a2a2a);
+      border-bottom: 1px solid #4b5563;
+    }
+    body.dark-theme .user-name {
+      color: #ffffff;
+    }
+    body.dark-theme .user-role {
+      color: #d1d5db;
+    }
+    body.dark-theme .main-content {
+      background: none;
+    }
+    body.dark-theme .left-section,
+    body.dark-theme .right-card {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    body.dark-theme .section-title {
+      color: #ffffff;
+    }
+    body.dark-theme .status-enabled {
+      background-color: #2dd4bf;
+      color: #1a1a1a;
+    }
+    body.dark-theme .doctor-info,
+    body.dark-theme .workplace-entry,
+    body.dark-theme .current-workplace,
+    body.dark-theme .patient-form,
+    body.dark-theme .patient-entry,
+    body.dark-theme .record-entry,
+    body.dark-theme .config-section,
+    body.dark-theme .expanded-day,
+    body.dark-theme .schedule-form,
+    body.dark-theme .calendar-day:not(.header):not(.empty) {
+      background: linear-gradient(to bottom, #3f3f3f, #2a2a2a);
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .info-row {
+      border-bottom: 1px dashed #4b5563;
+    }
+    body.dark-theme .info-row:hover {
+      background-color: #4b5563;
+    }
+    body.dark-theme .info-label {
+      color: #d1d5db;
+    }
+    body.dark-theme .info-label::before {
+      color: #ef4444;
+    }
+    body.dark-theme .info-value {
+      color: #ffffff;
+    }
+    body.dark-theme .record-date,
+    body.dark-theme .patient-name {
+      color: #ffffff;
+    }
+    body.dark-theme .record-detail,
+    body.dark-theme .patient-detail {
+      color: #d1d5db;
+    }
+    body.dark-theme .record-note {
+      color: #f9a8d4;
+    }
+    body.dark-theme .form-group label {
+      color: #ffffff;
+    }
+    body.dark-theme .form-group input,
+    body.dark-theme .form-group select {
+      background-color: #3f3f3f;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .form-group input:focus,
+    body.dark-theme .form-group select:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+    body.dark-theme .action-button,
+    body.dark-theme .history-button {
+      background: linear-gradient(to right, #ef4444, #f87171);
+      color: #ffffff;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    body.dark-theme .action-button:hover,
+    body.dark-theme .history-button:hover {
+      background: linear-gradient(to right, #f87171, #ef4444);
+      transform: scale(1.05);
+    }
+    body.dark-theme .whatsapp-button {
+      background: linear-gradient(to right, #22c55e, #34d399);
+      color: #1a1a1a;
+    }
+    body.dark-theme .whatsapp-button:hover {
+      background: linear-gradient(to right, #16a34a, #22c55e);
+      transform: scale(1.05);
+    }
+    body.dark-theme .calendar-day.header {
+      background: linear-gradient(to right, #ef4444, #f87171);
+      color: #ffffff;
+    }
+    body.dark-theme .calendar-day.fully-booked {
+      background: linear-gradient(to bottom, #ef4444, #dc2626);
+      color: white;
+    }
+    body.dark-theme .calendar-day:not(.header):not(.empty):not(.fully-booked) {
+      background: linear-gradient(to bottom, #3f3f3f, #2a2a2a);
+    }
+    body.dark-theme .calendar-day:hover:not(.header):not(.empty) {
+      background: linear-gradient(to bottom, #4b5563, #3f3f3f);
+      transform: scale(1.02);
+    }
+    body.dark-theme .appointment-slot.booked {
+      background: linear-gradient(to bottom, #f9a8d4, #f4a8c4);
+      color: #1a1a1a;
+    }
+    body.dark-theme .appointment-slot.free {
+      background: linear-gradient(to bottom, #2dd4bf, #1cb4a0);
+      color: #1a1a1a;
+    }
+    body.dark-theme .toggle-switch input {
+      background-color: #4b5563;
+    }
+    body.dark-theme .toggle-switch input:checked {
+      background: linear-gradient(to right, #ef4444, #f87171);
     }
   </style>
 </head>
@@ -426,6 +593,7 @@
       </div>
       <div class="header-actions">
         <div class="action-button" onclick="window.location.href='interfaz.html'">Predicciones</div>
+        <div class="action-button" onclick="window.location.href='buscar hospital doctor.html'">Interconsulta</div>
         <div class="action-button" onclick="window.location.href='login.html'">Cerrar Sesión</div>
       </div>
     </div>
@@ -631,7 +799,7 @@
             </div>
             <div class="info-row">
               <span class="info-label">Departamento:</span>
-              <span class="info-value">Medicina General</span>
+              <span class="info-value">Lima</span>
             </div>
             <div class="info-row">
               <span class="info-label">Rol:</span>
@@ -920,43 +1088,14 @@
     };
 
     function showSection(section) {
-      const inicioSection = document.getElementById('inicio-section');
-      const pacientesSection = document.getElementById('pacientes-section');
-      const informacionLaboralSection = document.getElementById('informacion-laboral-section');
-      const citasSection = document.getElementById('citas-section');
-      const configuracionSection = document.getElementById('configuracion-section');
+      const sections = ['inicio', 'pacientes', 'informacion-laboral', 'citas', 'configuracion'];
+      sections.forEach(s => {
+        const sectionElement = document.getElementById(`${s}-section`);
+        sectionElement.classList.toggle('hidden', s !== section);
+      });
 
-      if (section === 'inicio') {
-        inicioSection.classList.remove('hidden');
-        pacientesSection.classList.add('hidden');
-        informacionLaboralSection.classList.add('hidden');
-        citasSection.classList.add('hidden');
-        configuracionSection.classList.add('hidden');
-      } else if (section === 'pacientes') {
-        inicioSection.classList.add('hidden');
-        pacientesSection.classList.remove('hidden');
-        informacionLaboralSection.classList.add('hidden');
-        citasSection.classList.add('hidden');
-        configuracionSection.classList.add('hidden');
-      } else if (section === 'informacion-laboral') {
-        inicioSection.classList.add('hidden');
-        pacientesSection.classList.add('hidden');
-        informacionLaboralSection.classList.remove('hidden');
-        citasSection.classList.add('hidden');
-        configuracionSection.classList.add('hidden');
-      } else if (section === 'citas') {
-        inicioSection.classList.add('hidden');
-        pacientesSection.classList.add('hidden');
-        informacionLaboralSection.classList.add('hidden');
-        citasSection.classList.remove('hidden');
-        configuracionSection.classList.add('hidden');
+      if (section === 'citas') {
         renderCalendar();
-      } else if (section === 'configuracion') {
-        inicioSection.classList.add('hidden');
-        pacientesSection.classList.add('hidden');
-        informacionLaboralSection.classList.add('hidden');
-        citasSection.classList.add('hidden');
-        configuracionSection.classList.remove('hidden');
       }
     }
 
@@ -1181,12 +1320,23 @@
         dayDiv.textContent = day;
 
         const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
-        const hasAppointments = appointments.some(appt => appt.date === dateStr);
-        if (hasAppointments) {
-          dayDiv.classList.add('has-appointment');
+        const dayAppointments = appointments.filter(appt => appt.date === dateStr);
+        const dayOfWeek = (firstDayOfMonth + (day - 1)) % 7;
+
+        let totalSlots = 0;
+        if (dayOfWeek === 6) {
+          totalSlots = (workingHours.saturday.end - workingHours.saturday.start) * 2;
+        } else if (dayOfWeek !== 0) {
+          totalSlots = (workingHours.weekdays.end - workingHours.weekdays.start) * 2;
         }
 
-        dayDiv.addEventListener('click', () => showExpandedDay(day));
+        if (dayAppointments.length >= totalSlots && totalSlots > 0) {
+          dayDiv.classList.add('fully-booked');
+        }
+
+        if (dayOfWeek !== 0) {
+          dayDiv.addEventListener('click', () => showExpandedDay(day));
+        }
         calendarGrid.appendChild(dayDiv);
       }
     }
@@ -1298,37 +1448,33 @@
 
     function scheduleAppointment() {
       const patientSelect = document.getElementById('schedule-patient');
-      const newPatientNameInput = document.getElementById('new-patient-name');
+      let patient = patientSelect.value;
       const time = document.getElementById('schedule-time').value;
       const day = document.getElementById('schedule-day').value;
 
-      let patient;
-      if (patientSelect.value === 'new') {
-        patient = newPatientNameInput.value;
+      if (patient === 'new') {
+        patient = document.getElementById('new-patient-name').value;
         if (!patient) {
           alert('Por favor, ingrese el nombre del nuevo paciente.');
           return;
         }
+      }
+
+      if (patient && time && day) {
+        const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
+        appointments.push({ date: dateStr, time: time, patient: patient });
+        alert(`Cita agendada para ${patient} el ${day} de Abril a las ${time}.`);
+        showExpandedDay(day);
       } else {
-        patient = patientSelect.value;
-      }
-
-      if (!patient || !time) {
         alert('Por favor, seleccione un paciente y una hora.');
-        return;
       }
-
-      const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
-      appointments.push({ date: dateStr, time: time, patient: patient });
-      alert(`Cita agendada para ${patient} el ${day} de Abril a las ${time}.`);
-
-      showExpandedDay(parseInt(day));
-      renderCalendar();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      showsection('inicio');
+    document.getElementById('config-theme').addEventListener('change', function() {
+      document.body.classList.toggle('dark-theme', this.value === 'dark');
     });
+
+    showSection('inicio');
   </script>
 </body>
 </html>

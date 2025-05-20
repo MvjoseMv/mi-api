@@ -9,14 +9,36 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
+      background: linear-gradient(to bottom, #fffbeb, #e5e7eb);
       display: flex;
       height: 100vh;
       overflow: hidden;
+      position: relative;
+      font-size: 16px; /* Default: Mediano */
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQYV2NkYGD4z8DAwMgABXAGNgYGBgYGBgQAAAAMJAD8AAScDPZu8iW0AAAAASUVORK5CYII=') repeat;
+      opacity: 0.03;
+      z-index: -1;
+    }
+    body.font-small {
+      font-size: 14px;
+    }
+    body.font-medium {
+      font-size: 16px;
+    }
+    body.font-large {
+      font-size: 18px;
     }
     .sidebar {
-      width: 200px;
-      background-color: #4a0e0e;
+      width: 250px;
+      background: linear-gradient(to bottom, #4a0e0e, #6b1a1a);
       color: white;
       padding: 20px;
       display: flex;
@@ -28,10 +50,11 @@
       background-color: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .sidebar-item:hover {
       background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
     }
     .container {
       flex: 1;
@@ -40,12 +63,13 @@
       overflow: hidden;
     }
     .header {
-      background-color: white;
+      background: linear-gradient(to right, #fefefe, #f5f5f5);
       padding: 15px 30px;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid #d1d5db;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     .user-info {
       display: flex;
@@ -63,10 +87,14 @@
       font-size: 18px;
       font-weight: bold;
       color: #1f2937;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
     .user-role {
       font-size: 14px;
-      color: #6b7280;
+      color: #4b5563;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
     .header-actions {
       display: flex;
@@ -74,17 +102,18 @@
       gap: 15px;
     }
     .action-button {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
       color: white;
       padding: 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       text-align: center;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
     .action-button:hover {
-      background-color: #b91c1c;
+      background: linear-gradient(to right, #b91c1c, #dc2626);
+      transform: scale(1.05);
     }
     .main-content {
       display: flex;
@@ -92,13 +121,14 @@
       padding: 20px;
       gap: 20px;
       overflow: hidden;
+      background: none;
     }
     .left-section {
       flex: 3;
-      background-color: white;
+      background: linear-gradient(to bottom, #fefefe, #f5f5f5);
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       overflow-y: auto;
     }
     .right-section {
@@ -108,26 +138,31 @@
       gap: 20px;
     }
     .right-card {
-      background-color: white;
+      background: linear-gradient(to bottom, #f5f5f5, #e5e7eb);
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     .section-title {
       font-size: 18px;
       font-weight: bold;
       margin-bottom: 15px;
-      color: #374151;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px;
+      border-radius: 5px;
     }
-    .patient-info, .record-entry, .appointment-entry {
+    .patient-info, .record-entry, .appointment-entry, .config-section {
       margin-bottom: 20px;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .patient-info:hover, .record-entry:hover, .appointment-entry:hover {
+    .patient-info:hover, .record-entry:hover, .appointment-entry:hover, .config-section:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
@@ -135,16 +170,17 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 10px;
-      padding: 8px 0;
-      border-bottom: 1px dashed #e0e0e0;
+      padding: 8px;
+      border-bottom: 1px dashed #d1d5db;
       transition: background-color 0.3s ease;
+      border-radius: 4px;
     }
     .info-row:hover {
-      background-color: #f0f0f0;
+      background-color: #e5e7eb;
     }
     .info-label {
       font-weight: bold;
-      color: #6b7280;
+      color: #4b5563;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -163,22 +199,28 @@
     }
     .record-date, .appointment-date {
       font-weight: bold;
-      color: #374151;
+      color: #1f2937;
       margin-bottom: 8px;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
     .record-detail, .appointment-detail {
-      color: #6b7280;
+      color: #4b5563;
       line-height: 1.5;
       margin-bottom: 5px;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
     .record-note {
       color: #dc2626;
       font-style: italic;
       font-size: 14px;
       margin-top: 5px;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
     .message-form {
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -190,25 +232,28 @@
     .form-group label {
       display: block;
       font-weight: bold;
-      color: #374151;
+      color: #1f2937;
       margin-bottom: 5px;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
     .form-group input,
     .form-group textarea,
     .form-group select {
       width: 100%;
       padding: 8px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #d1d5db;
       border-radius: 5px;
       font-size: 14px;
       color: #1f2937;
+      background-color: #fefefe;
     }
     .form-group input:focus,
     .form-group textarea:focus,
     .form-group select:focus {
       outline: none;
       border-color: #dc2626;
-      box-shadow: 0 0 5px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 0 5px rgba(220, 38, 38, 0.3);
     }
     .hidden {
       display: none;
@@ -219,7 +264,7 @@
       right: 20px;
       width: 300px;
       max-height: 400px;
-      background-color: white;
+      background: linear-gradient(to bottom, #fefefe, #f5f5f5);
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       display: flex;
@@ -228,7 +273,7 @@
       z-index: 1000;
     }
     .chat-header {
-      background-color: #4a0e0e;
+      background: linear-gradient(to right, #4a0e0e, #6b1a1a);
       color: white;
       padding: 10px;
       font-weight: bold;
@@ -240,7 +285,7 @@
       flex: 1;
       padding: 10px;
       overflow-y: auto;
-      background-color: #fafafa;
+      background: linear-gradient(to bottom, #f5f5f5, #ececec);
     }
     .chat-message {
       margin-bottom: 10px;
@@ -249,34 +294,167 @@
       max-width: 80%;
     }
     .chat-message.sent {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #dc2626, #ef4444);
       color: white;
       margin-left: auto;
     }
     .chat-message.received {
-      background-color: #e0e0e0;
+      background: linear-gradient(to bottom, #e0e0e0, #d1d5db);
       color: #1f2937;
       margin-right: auto;
     }
     .chat-footer {
       padding: 10px;
-      background-color: white;
-      border-top: 1px solid #e0e0e0;
+      background: linear-gradient(to bottom, #fefefe, #f5f5f5);
+      border-top: 1px solid #d1d5db;
     }
     .chat-footer input {
       width: 100%;
       padding: 8px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #d1d5db;
       border-radius: 5px;
       font-size: 14px;
+      background-color: #fefefe;
     }
     .chat-footer input:focus {
       outline: none;
       border-color: #dc2626;
+      box-shadow: 0 0 5px rgba(220, 38, 38, 0.3);
     }
     .chat-close {
       cursor: pointer;
       font-size: 16px;
+    }
+    body.dark-theme {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+    }
+    body.dark-theme::before {
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQYV2NkYGD4z8DAwMgABXAGNgYGBgYGBgQAAAAMJAD8AAScDPZu8iW0AAAAASUVORK5CYII=') repeat;
+      opacity: 0.1;
+    }
+    body.dark-theme .sidebar {
+      background: linear-gradient(to bottom, #2a0a0a, #4a0e0e);
+    }
+    body.dark-theme .sidebar-item {
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    body.dark-theme .sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
+    }
+    body.dark-theme .header {
+      background: linear-gradient(to right, #1e1e1e, #2a2a2a);
+      border-bottom: 1px solid #4b5563;
+    }
+    body.dark-theme .user-name {
+      color: #ffffff;
+    }
+    body.dark-theme .user-role {
+      color: #d1d5db;
+    }
+    body.dark-theme .main-content {
+      background: none;
+    }
+    body.dark-theme .left-section,
+    body.dark-theme .right-card {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    body.dark-theme .section-title {
+      color: #ffffff;
+    }
+    body.dark-theme .patient-info,
+    body.dark-theme .record-entry,
+    body.dark-theme .appointment-entry,
+    body.dark-theme .message-form,
+    body.dark-theme .config-section {
+      background: linear-gradient(to bottom, #3f3f3f, #2a2a2a);
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .info-row {
+      border-bottom: 1px dashed #4b5563;
+    }
+    body.dark-theme .info-row:hover {
+      background-color: #4b5563;
+    }
+    body.dark-theme .info-label {
+      color: #d1d5db;
+    }
+    body.dark-theme .info-label::before {
+      color: #ef4444;
+    }
+    body.dark-theme .info-value {
+      color: #ffffff;
+    }
+    body.dark-theme .record-date,
+    body.dark-theme .appointment-date {
+      color: #ffffff;
+    }
+    body.dark-theme .record-detail,
+    body.dark-theme .appointment-detail {
+      color: #d1d5db;
+    }
+    body.dark-theme .record-note {
+      color: #f9a8d4;
+    }
+    body.dark-theme .form-group label {
+      color: #ffffff;
+    }
+    body.dark-theme .form-group input,
+    body.dark-theme .form-group textarea,
+    body.dark-theme .form-group select {
+      background-color: #3f3f3f;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .form-group input:focus,
+    body.dark-theme .form-group textarea:focus,
+    body.dark-theme .form-group select:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+    body.dark-theme .action-button {
+      background: linear-gradient(to right, #ef4444, #f87171);
+      color: #ffffff;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    body.dark-theme .action-button:hover {
+      background: linear-gradient(to right, #f87171, #ef4444);
+      transform: scale(1.05);
+    }
+    body.dark-theme .chat-container {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    body.dark-theme .chat-header {
+      background: linear-gradient(to right, #ef4444, #f87171);
+      color: #ffffff;
+    }
+    body.dark-theme .chat-body {
+      background: linear-gradient(to bottom, #3f3f3f, #2a2a2a);
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .chat-footer {
+      background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+      border-top: 1px solid #4b5563;
+    }
+    body.dark-theme .chat-footer input {
+      background-color: #3f3f3f;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+    }
+    body.dark-theme .chat-footer input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+    body.dark-theme .chat-message.sent {
+      background: linear-gradient(to right, #ef4444, #f87171);
+      color: #ffffff;
+    }
+    body.dark-theme .chat-message.received {
+      background: linear-gradient(to bottom, #4b5563, #3f3f3f);
+      color: #ffffff;
     }
   </style>
 </head>
@@ -299,6 +477,7 @@
       </div>
       <div class="header-actions">
         <div class="action-button" onclick="window.location.href='interfaz paciente.html'">Predicciones</div>
+        <div class="action-button" onclick="window.location.href='buscar hospital paciente.html'">Interconsulta</div>
         <div class="action-button" onclick="window.location.href='login.html'">Cerrar Sesión</div>
       </div>
     </div>
@@ -426,7 +605,7 @@
 
         <div id="configuracion-section" class="hidden">
           <div class="section-title">Configuración</div>
-          <div class="patient-info">
+          <div class="config-section">
             <div class="section-title">Perfil</div>
             <div class="form-group">
               <label for="config-email">Correo Electrónico</label>
@@ -438,7 +617,7 @@
             </div>
             <button class="action-button" onclick="alert('Cambios guardados.')">Guardar Cambios</button>
           </div>
-          <div class="patient-info">
+          <div class="config-section">
             <div class="section-title">Seguridad</div>
             <div class="form-group">
               <label for="config-password">Cambiar Contraseña</label>
@@ -449,6 +628,24 @@
               <input type="password" id="config-password-confirm" placeholder="Confirmar nueva contraseña">
             </div>
             <button class="action-button" onclick="alert('Contraseña actualizada.')">Actualizar Contraseña</button>
+          </div>
+          <div class="config-section">
+            <div class="section-title">Tema y Visualización</div>
+            <div class="form-group">
+              <label for="config-theme">Tema</label>
+              <select id="config-theme">
+                <option value="light" selected>Claro</option>
+                <option value="dark">Oscuro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="config-font-size">Tamaño de Fuente</label>
+              <select id="config-font-size">
+                <option value="small">Pequeño</option>
+                <option value="medium" selected>Mediano</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -604,24 +801,18 @@
         } else {
           doc.text(`Motivo: ${record.motivo}`, 25, yPos + 15);
           if (record.diagnostico) doc.text(`Diagnóstico: ${record.diagnostico}`, 25, yPos + 20);
-          doc.text(`Tratamiento: ${record.tratamiento}`, 25, yPos + (record.diagnostico ? 25 : 20));
-          if (record.nota) {
-            doc.setTextColor(220, 38, 38);
-            doc.setFont('helvetica', 'italic');
-            doc.text(`Nota: ${record.nota}`, 25, yPos + (record.diagnostico ? 30 : 25));
-            doc.setTextColor(31, 41, 55);
-            doc.setFont('helvetica', 'normal');
-          }
+          if (record.tratamiento) doc.text(`Tratamiento: ${record.tratamiento}`, 25, yPos + 25);
+          if (record.nota) doc.text(`Nota: ${record.nota}`, 25, yPos + 30);
         }
-        yPos += record.evento ? 30 : record.nota ? 50 : 40;
+        yPos += record.evento ? 25 : record.nota ? 45 : 35;
       });
 
       // Footer
       doc.setFontSize(10);
       doc.setFont('helvetica', 'italic');
-      doc.setTextColor(107, 114, 128); // #6b7280
-      doc.text('Generado el 28 de Abril de 2025', 20, 280);
-      doc.text('Sistema de Gestión Médica - Hospital Nacional Arzobispo Loayza', 20, 285);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Generado por Sistema de Gestión Médica', 20, 280);
+      doc.text('Hospital Nacional Arzobispo Loayza', 20, 285);
 
       doc.save(`Historial_Medico_${patientData.name}.pdf`);
     }
@@ -631,124 +822,139 @@
       const doc = new jsPDF();
 
       // Header
-      doc.setFillColor(74, 14, 14);
+      doc.setFillColor(74, 14, 14); // #4a0e0e
       doc.rect(0, 0, 210, 40, 'F');
       doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       doc.text('Resumen de Citas Agendadas', 20, 25);
       doc.setFontSize(12);
-      doc.text(`Paciente: ${patientData.name}`, 20, 35);
+      doc.text('Paciente: Ana Gómez Sánchez', 20, 35);
 
       // Patient Info
       doc.setFontSize(12);
-      doc.setTextColor(31, 41, 55);
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(31, 41, 55);
       doc.text(`DNI: ${patientData.dni}`, 20, 50);
+      doc.text('Período: Abril - Mayo 2025', 20, 55);
 
-      // Table Header
+      // Appointments Header
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setFillColor(240, 240, 240);
-      doc.rect(20, 60, 170, 10, 'F');
-      doc.setTextColor(55, 65, 81);
-      doc.text('Fecha', 25, 67);
-      doc.text('Hora', 70, 67);
-      doc.text('Médico', 110, 67);
-      doc.text('Motivo', 150, 67);
+      doc.rect(20, 65, 170, 10, 'F');
+      doc.text('Fecha', 25, 72);
+      doc.text('Hora', 70, 72);
+      doc.text('Médico', 100, 72);
+      doc.text('Motivo', 150, 72);
 
-      // Table Content
-      let yPos = 75;
+      // Appointment Entries
+      let yPos = 80;
       patientData.appointments.forEach((appt, index) => {
         doc.setFillColor(index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255, index % 2 === 0 ? 250 : 255);
         doc.rect(20, yPos, 170, 10, 'F');
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(31, 41, 55);
         doc.text(appt.date, 25, yPos + 7);
         doc.text(appt.time, 70, yPos + 7);
-        doc.text(appt.doctor, 110, yPos + 7);
-        doc.text(appt.motivo.substring(0, 20) + (appt.motivo.length > 20 ? '...' : ''), 150, yPos + 7);
+        doc.text(appt.doctor, 100, yPos + 7);
+        doc.text(appt.motivo.slice(0, 20) + (appt.motivo.length > 20 ? '...' : ''), 150, yPos + 7);
         yPos += 10;
       });
 
       // Footer
       doc.setFontSize(10);
       doc.setFont('helvetica', 'italic');
-      doc.setTextColor(107, 114, 128);
+      doc.setTextColor(100, 100, 100);
       doc.text('Generado el 28 de Abril de 2025', 20, 280);
       doc.text('Sistema de Gestión Médica', 20, 285);
 
-      doc.save(`Resumen_Citas_${patientData.name}.pdf`);
+      doc.save('Resumen_Citas_Abril_Mayo_2025.pdf');
     }
 
     function sendMessage() {
       const doctor = document.getElementById('message-doctor').value;
-      const message = document.getElementById('message-content').value;
-      if (doctor && message) {
-        const newMessage = {
-          date: new Date().toLocaleDateString('es-ES'),
+      const content = document.getElementById('message-content').value;
+      if (doctor && content) {
+        patientData.messages.push({
+          date: new Date().toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }),
           from: patientData.name,
-          to: doctor,
-          content: message,
+          content: content,
           type: 'sent'
-        };
-        patientData.messages.push(newMessage);
-        alert(`Mensaje enviado a ${doctor}.`);
+        });
+        alert(`Mensaje enviado a ${doctor}`);
         document.getElementById('message-content').value = '';
-        openChat(doctor);
-        renderChatMessages();
+        showSection('mensajes');
       } else {
         alert('Por favor, seleccione un médico y escriba un mensaje.');
       }
     }
 
-    function openChat(doctor) {
-      const chatContainer = document.getElementById('chat-container');
-      const chatDoctorName = document.getElementById('chat-doctor-name');
-      chatContainer.classList.remove('hidden');
-      chatDoctorName.textContent = `Chat con ${doctor}`;
-      renderChatMessages(doctor);
-      document.getElementById('chat-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && this.value.trim()) {
-          const newMessage = {
-            date: new Date().toLocaleDateString('es-ES'),
-            from: patientData.name,
-            to: doctor,
-            content: this.value.trim(),
-            type: 'sent'
-          };
-          patientData.messages.push(newMessage);
-          this.value = '';
-          renderChatMessages(doctor);
-        }
-      });
-    }
-
     function toggleChat() {
       const chatContainer = document.getElementById('chat-container');
       chatContainer.classList.toggle('hidden');
+      if (!chatContainer.classList.contains('hidden')) {
+        const doctorName = document.getElementById('message-doctor').value || 'Dr. Eduardo Manuel';
+        document.getElementById('chat-doctor-name').textContent = `Chat con ${doctorName}`;
+        renderChatMessages(doctorName);
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter' && this.value.trim()) {
+            sendChatMessage(this.value, doctorName);
+            this.value = '';
+          }
+        });
+      }
     }
 
     function renderChatMessages(doctor) {
       const chatBody = document.getElementById('chat-body');
       chatBody.innerHTML = '';
-      const relevantMessages = patientData.messages.filter(msg => msg.from === doctor || msg.to === doctor);
-      relevantMessages.forEach(msg => {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${msg.type}`;
-        messageDiv.innerHTML = `
-          <div style="font-size: 10px; color: ${msg.type === 'sent' ? '#ffffff' : '#6b7280'}">${msg.date}</div>
-          <div>${msg.content}</div>
-        `;
-        chatBody.appendChild(messageDiv);
-      });
+      patientData.messages
+        .filter(msg => msg.from === doctor || msg.from === patientData.name)
+        .forEach(msg => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `chat-message ${msg.type}`;
+          messageDiv.innerHTML = `<strong>${msg.from} (${msg.date}):</strong> ${msg.content}`;
+          chatBody.appendChild(messageDiv);
+        });
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      showSection('inicio');
+    function sendChatMessage(content, doctor) {
+      patientData.messages.push({
+        date: new Date().toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+        from: patientData.name,
+        content: content,
+        type: 'sent'
+      });
+      setTimeout(() => {
+        patientData.messages.push({
+          date: new Date().toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+          from: doctor,
+          content: 'Mensaje recibido, le responderé pronto.',
+          type: 'received'
+        });
+        renderChatMessages(doctor);
+      }, 1000);
+      renderChatMessages(doctor);
+    }
+
+    document.getElementById('config-theme').addEventListener('change', function() {
+      document.body.classList.toggle('dark-theme', this.value === 'dark');
     });
+
+    document.getElementById('config-font-size').addEventListener('change', function() {
+      document.body.classList.remove('font-small', 'font-medium', 'font-large');
+      document.body.classList.add(`font-${this.value}`);
+    });
+
+    document.getElementById('mensajes-section').addEventListener('click', function(e) {
+      if (e.target.closest('.action-button') && document.getElementById('message-doctor').value) {
+        toggleChat();
+      }
+    });
+
+    showSection('inicio');
   </script>
 </body>
 </html>
